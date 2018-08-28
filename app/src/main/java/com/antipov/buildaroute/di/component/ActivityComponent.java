@@ -1,8 +1,8 @@
 package com.antipov.buildaroute.di.component;
 
 
-import com.antipov.buildaroute.MainActivity;
 import com.antipov.buildaroute.di.module.ActivityModule;
+import com.antipov.buildaroute.ui.activity.MainActivity;
 
 import dagger.Component;
 
