@@ -1,38 +1,31 @@
 package com.antipov.buildaroute.ui.dialog;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.data.pojo.AutocompleteItem;
 import com.antipov.buildaroute.ui.adapter.AutocompleteAdapter;
 import com.antipov.buildaroute.ui.base.BaseDialogFragment;
-import com.antipov.buildaroute.ui.base.IBaseView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Scheduler;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 import static io.reactivex.schedulers.Schedulers.newThread;
 
@@ -46,12 +39,16 @@ public class AddressDialog extends BaseDialogFragment implements AddressView {
 
     private AutocompleteAdapter adapter;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        getAppComponent().inject(this);
+        presenter.attachView(this);
+        super.onCreate(savedInstanceState);
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        getAppComponent().inject(this);
-        presenter.attachView(this);
-
         AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
         builder
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {})
@@ -83,17 +80,17 @@ public class AddressDialog extends BaseDialogFragment implements AddressView {
         ButterKnife.bind(this, getInflatedView());
     }
 
-    @SuppressLint("CheckResult")
     @Override
     public void initListeners() {
-        RxTextView
+        Observable<String> observable = RxTextView
                 .textChanges(autoComplete)                                // observing autocomplete field
                 .filter(constraint -> constraint.length() > 3)            // at least 4 chars
                 .debounce(300, TimeUnit.MILLISECONDS)             // with 0.3 sec interval
                 .map(CharSequence::toString)                              // mapping to string
                 .subscribeOn(newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(string -> presenter.loadAutoComplete(string)); // requesting new hints
+                .observeOn(AndroidSchedulers.mainThread());
+
+        presenter.loadAutoComplete(observable);
     }
 
     @Override
@@ -111,6 +108,17 @@ public class AddressDialog extends BaseDialogFragment implements AddressView {
     @Override
     public void setAutocomplete(List<AutocompleteItem> results) {
         adapter.setAutocomplete(results);
+    }
+
+    @Override
+    public void notifyAboutNoResults() {
+        onError(getString(R.string.not_found));
+    }
+
+    @Override
+    public void onError(String message) {
+        super.onError(message);
+        autoComplete.setError(message, null);
     }
 
     @Override

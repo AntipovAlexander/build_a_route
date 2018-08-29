@@ -16,12 +16,10 @@ import java.util.List;
 
 public class AutocompleteAdapter extends ArrayAdapter<String> {
     private final List<String> data;
-    private final Context context;
     private final int itemLayout;
 
     public AutocompleteAdapter(@NonNull Context context, int resource) {
         super(context, resource);
-        this.context = context;
         this.data = new ArrayList<>();
         this.itemLayout = resource;
     }
@@ -52,7 +50,7 @@ public class AutocompleteAdapter extends ArrayAdapter<String> {
 
     public void setAutocomplete(List<AutocompleteItem> results) {
         data.clear();
-        for (AutocompleteItem result: results) {
+        for (AutocompleteItem result : results) {
             data.add(result.getFormattedAddress());
         }
         notifyDataSetChanged();

@@ -10,6 +10,7 @@
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="type">Type the address</string>
+    <string name="not_found">Not found, try another destination</string>
     <string-array name="tabs_name">
         <item>Map</item>
         <item>History</item>

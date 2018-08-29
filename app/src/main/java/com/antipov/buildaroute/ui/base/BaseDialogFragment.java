@@ -4,11 +4,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.di.component.ActivityComponent;
+import com.antipov.buildaroute.utils.DialogUtils;
 
 import java.util.Objects;
 
@@ -118,12 +120,12 @@ public abstract class BaseDialogFragment extends DialogFragment implements IBase
 
     @Override
     public void onError(String message) {
-
+        showMessage(message);
     }
 
     @Override
     public void showMessage(String message) {
-
+        DialogUtils.showSnackbar((AppCompatActivity) Objects.requireNonNull(getActivity()), message);
     }
 
     @Override

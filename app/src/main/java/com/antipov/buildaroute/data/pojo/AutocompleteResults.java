@@ -13,4 +13,16 @@ public class AutocompleteResults {
     public void setResults(List<AutocompleteItem> results) {
         this.results = results;
     }
+
+    public static AutocompleteResults getForTests(boolean empty) {
+        AutocompleteResults model = new AutocompleteResults();
+        List<AutocompleteItem> items = new ArrayList<>(1);
+        if (!empty) {
+            AutocompleteItem item = new AutocompleteItem();
+            item.setFormattedAddress("some address");
+            items.add(item);
+        }
+        model.setResults(items);
+        return model;
+    }
 }

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface AddressView extends IBaseView {
     void setAutocomplete(List<AutocompleteItem> results);
+
+    void notifyAboutNoResults();
 }
