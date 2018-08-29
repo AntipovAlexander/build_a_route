@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Objects;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -35,6 +37,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @BindView(R.id.tv_start_point) TextView startPoint;
     @BindView(R.id.tv_end_point) TextView endPoint;
 
+    private final String DIALOG_TAG = "address-dialog";
     private GoogleMap googleMap;
 
     @Override
@@ -92,17 +95,20 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
 
     @Override
     public void initListeners() {
-        startPoint.setOnClickListener(l ->{
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            Fragment prev = getFragmentManager().findFragmentByTag("dialog");
-            if (prev != null) {
-                ft.remove(prev);
-            }
-            ft.addToBackStack(null);
+        startPoint.setOnClickListener(l -> presenter.onMapButtonClick());
+    }
 
-            DialogFragment dialogFragment = new AddressDialog();
-            dialogFragment.show(ft, "dialog");
-        });
+    @Override
+    public void showAddressDialog() {
+        FragmentTransaction ft = Objects.requireNonNull(getFragmentManager()).beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(DIALOG_TAG);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        DialogFragment dialogFragment = new AddressDialog();
+        dialogFragment.show(ft, DIALOG_TAG);
     }
 
     @Override

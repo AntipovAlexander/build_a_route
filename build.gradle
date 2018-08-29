@@ -38,6 +38,8 @@ ext {
     retrofit = '2.1.0'
     logsInterceptor = '3.8.0'
     gson = '2.3.0'
+    mockito = '2.7.1'
+    maps = '15.0.1'
     appCompat = '28.0.0-rc01'
     materialDialogCore = 'core:0.9.6.0'
     materialDialogCommon = 'commons:0.9.6.0'

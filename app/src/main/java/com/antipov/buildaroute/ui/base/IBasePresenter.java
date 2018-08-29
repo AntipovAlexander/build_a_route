@@ -19,7 +19,7 @@ public interface IBasePresenter<V extends IBaseView, I extends IBaseInteractor> 
 
     I getInteractor();
 
-    boolean isViewAttached();
+    boolean isViewNotAttached();
 
     void detachView();
 }

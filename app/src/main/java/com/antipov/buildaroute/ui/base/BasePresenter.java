@@ -59,8 +59,8 @@ public class BasePresenter<V extends IBaseView, I extends IBaseInteractor> imple
      * @return is view attached
      */
     @Override
-    public boolean isViewAttached() {
-        return mView != null;
+    public boolean isViewNotAttached() {
+        return mView == null;
     }
 
     /**
