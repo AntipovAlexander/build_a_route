@@ -3,6 +3,7 @@ package com.antipov.buildaroute.di.component;
 
 import com.antipov.buildaroute.di.module.ActivityModule;
 import com.antipov.buildaroute.ui.activity.MainActivity;
+import com.antipov.buildaroute.ui.dialog.AddressDialog;
 import com.antipov.buildaroute.ui.fragment.map.MapFragment;
 
 import dagger.Component;
@@ -17,4 +18,6 @@ import dagger.Component;
         modules = ActivityModule.class)
 public interface ActivityComponent {
     void inject(MapFragment mapFragment);
+
+    void inject(AddressDialog addressDialog);
 }
