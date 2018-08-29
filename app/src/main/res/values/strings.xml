@@ -2,6 +2,9 @@
     <string name="app_name">Build a route</string>
     <string name="progress_dialog_title">Loading …</string>
     <string name="please_wait">Please wait</string>
+    <string name="add_start">Tap to add start point</string>
+    <string name="add_end">Tap to add end point</string>
+    <string name="add_in_between">Add in-between</string>
     <string-array name="tabs_name">
         <item>Map</item>
         <item>History</item>
