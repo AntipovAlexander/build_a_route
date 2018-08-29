@@ -9,6 +9,7 @@
     <string name="add_address">Add address</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    <string name="type">Type the address</string>
     <string-array name="tabs_name">
         <item>Map</item>
         <item>History</item>

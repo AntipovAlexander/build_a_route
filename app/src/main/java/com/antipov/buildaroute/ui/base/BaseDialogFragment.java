@@ -1,21 +1,21 @@
 package com.antipov.buildaroute.ui.base;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
+import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.di.component.ActivityComponent;
+
+import java.util.Objects;
 
 public abstract class BaseDialogFragment extends DialogFragment implements IBaseView {
     private Context context;
     private BaseActivity mActivity;
+    private View view;
 
     /**
      * called when fragment attaches to an activity
@@ -46,9 +46,18 @@ public abstract class BaseDialogFragment extends DialogFragment implements IBase
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LayoutInflater layoutInflater = Objects.requireNonNull(getActivity()).getLayoutInflater();
+        view = layoutInflater.inflate(R.layout.dialog_address_input, null);
         getExtras();
         initViews();
         initListeners();
+    }
+
+    /**
+     * @return inflated view
+     */
+    public View getInflatedView() {
+        return view;
     }
 
     /**
@@ -147,4 +156,13 @@ public abstract class BaseDialogFragment extends DialogFragment implements IBase
      * Create your listener callbacks there.
      */
     public abstract void initListeners();
+
+    /**
+     * Method for setup layout.
+     * An implementation returning layout id for inflating.
+     * I.e. R.layout.main
+     *
+     * @return layout id. If you are don`t using layout, just return -1
+     */
+    public abstract int getLayoutId();
 }
