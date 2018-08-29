@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class MapPresenterImplTest {
 
@@ -35,7 +33,7 @@ public class MapPresenterImplTest {
     @Test
     public void onMapButtonClick() {
         presenter.onMapButtonClick();
-        Mockito.verify(mockedMapView).showAddressDialog();
+        Mockito.verify(mockedMapView).showAddressDialog(request);
         Mockito.verifyNoMoreInteractions(mockedMapView);
     }
 }

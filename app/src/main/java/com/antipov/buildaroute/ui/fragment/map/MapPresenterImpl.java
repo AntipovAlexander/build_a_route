@@ -13,8 +13,8 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
     }
 
     @Override
-    public void onMapButtonClick() {
+    public void onMapButtonClick(int request) {
         if (isViewNotAttached()) return;
-        getView().showAddressDialog();
+        getView().showAddressDialog(request);
     }
 }

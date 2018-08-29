@@ -120,12 +120,11 @@ public abstract class BaseDialogFragment extends DialogFragment implements IBase
 
     @Override
     public void onError(String message) {
-        showMessage(message);
+
     }
 
     @Override
     public void showMessage(String message) {
-        DialogUtils.showSnackbar((AppCompatActivity) Objects.requireNonNull(getActivity()), message);
     }
 
     @Override

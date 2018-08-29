@@ -1,5 +1,6 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,15 +11,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.antipov.buildaroute.R;
+import com.antipov.buildaroute.common.Const;
+import com.antipov.buildaroute.data.pojo.AutocompleteItem;
 import com.antipov.buildaroute.ui.base.BaseFragment;
 import com.antipov.buildaroute.ui.dialog.AddressDialog;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Objects;
 
@@ -26,6 +25,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.app.Activity.RESULT_OK;
 
 public class MapFragment extends BaseFragment implements com.antipov.buildaroute.ui.fragment.map.MapView,
         OnMapReadyCallback {
@@ -38,7 +39,12 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @BindView(R.id.tv_end_point) TextView endPoint;
 
     private final String DIALOG_TAG = "address-dialog";
+    private final int REQUEST_GET_START = 1;
+    private final int REQUEST_GET_FINISH = 2;
+    private final int REQUEST_GET_ADDRESS = 8;
     private GoogleMap googleMap;
+    private AutocompleteItem start;
+    private AutocompleteItem finish;
 
     @Override
     public void onStart() {
@@ -95,20 +101,38 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
 
     @Override
     public void initListeners() {
-        startPoint.setOnClickListener(l -> presenter.onMapButtonClick());
+        startPoint.setOnClickListener(l -> presenter.onMapButtonClick(REQUEST_GET_START));
+        endPoint.setOnClickListener(l -> presenter.onMapButtonClick(REQUEST_GET_FINISH));
     }
 
     @Override
-    public void showAddressDialog() {
+    public void showAddressDialog(int request) {
         FragmentTransaction ft = Objects.requireNonNull(getFragmentManager()).beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(DIALOG_TAG);
         if (prev != null) {
             ft.remove(prev);
         }
         ft.addToBackStack(null);
-
         DialogFragment dialogFragment = new AddressDialog();
+        dialogFragment.setTargetFragment(this, request);
         dialogFragment.show(ft, DIALOG_TAG);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_GET_START:
+                if (resultCode == RESULT_OK) {
+                    start = data.getParcelableExtra(Const.Args.SELECTED_ADDRESS);
+                }
+                break;
+            case REQUEST_GET_FINISH:
+                if (resultCode == RESULT_OK) {
+                    finish = data.getParcelableExtra(Const.Args.SELECTED_ADDRESS);
+                }
+                break;
+        }
     }
 
     @Override
@@ -124,14 +148,14 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-
-        // For dropping a marker at a point on the Map
-        LatLng sydney = new LatLng(-34, 151);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
-
-        // For zooming automatically to the location of the marker
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//
+//        // For dropping a marker at a point on the Map
+//        LatLng sydney = new LatLng(-34, 151);
+//        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
+//
+//        // For zooming automatically to the location of the marker
+//        CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
+//        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override
