@@ -1,6 +1,7 @@
 package com.antipov.buildaroute.di.component;
 
 import com.antipov.buildaroute.di.module.AppModule;
+import com.antipov.buildaroute.utils.rx.SchedulerProvider;
 
 import dagger.Component;
 
@@ -14,7 +15,7 @@ import dagger.Component;
 public interface AppComponent {
 
     // provide dependencies from app module to dependent components
-//    SchedulerProvider schedulerProvider();
+    SchedulerProvider schedulerProvider();
 
 //    TopPostsRepository topPostsRepository();
 

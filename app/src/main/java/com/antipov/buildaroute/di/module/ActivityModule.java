@@ -3,6 +3,12 @@ package com.antipov.buildaroute.di.module;
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 
+import com.antipov.buildaroute.ui.fragment.map.MapInteractor;
+import com.antipov.buildaroute.ui.fragment.map.MapInteractorImpl;
+import com.antipov.buildaroute.ui.fragment.map.MapPresenter;
+import com.antipov.buildaroute.ui.fragment.map.MapPresenterImpl;
+import com.antipov.buildaroute.ui.fragment.map.MapView;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -21,13 +27,13 @@ public class ActivityModule {
     }
 
 
-//    @Provides
-//    public MainPresenter<MainView, MainInteractor> provideMainPresenter(MainPresenterImpl<MainView, MainInteractor> presenter) {
-//        return presenter;
-//    }
-//
-//    @Provides
-//    public MainInteractor provideMainInteractor(MainInteractorImpl interactor) {
-//        return interactor;
-//    }
+    @Provides
+    public MapPresenter<MapView, MapInteractor> provideMapPresenter(MapPresenterImpl<MapView, MapInteractor> presenter) {
+        return presenter;
+    }
+
+    @Provides
+    public MapInteractor provideMapInteractor(MapInteractorImpl interactor) {
+        return interactor;
+    }
 }

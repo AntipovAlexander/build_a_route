@@ -3,36 +3,53 @@ package com.antipov.buildaroute.ui.fragment.map;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.widget.TextView;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.ui.base.BaseFragment;
+import com.antipov.buildaroute.ui.dialog.AddressDialog;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapFragment extends BaseFragment implements OnMapReadyCallback {
+public class MapFragment extends BaseFragment implements com.antipov.buildaroute.ui.fragment.map.MapView,
+        OnMapReadyCallback {
+
+    @Inject
+    MapPresenter<com.antipov.buildaroute.ui.fragment.map.MapView, MapInteractor> presenter;
 
     @BindView(R.id.map) MapView map;
+    @BindView(R.id.tv_start_point) TextView startPoint;
+    @BindView(R.id.tv_end_point) TextView endPoint;
+
     private GoogleMap googleMap;
 
     @Override
     public void onStart() {
         super.onStart();
+        // according to map lifecycle
         map.onStart();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getAppComponent().inject(this);
+        presenter.attachView(this);
+        // according to map lifecycle
         map.onCreate(savedInstanceState);
         map.getMapAsync(this);
     }
@@ -40,18 +57,21 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
+        // according to map lifecycle
         map.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        // according to map lifecycle
         map.onPause();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        // according to map lifecycle
         map.onStop();
     }
 
@@ -72,7 +92,17 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback {
 
     @Override
     public void initListeners() {
+        startPoint.setOnClickListener(l ->{
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
 
+            DialogFragment dialogFragment = new AddressDialog();
+            dialogFragment.show(ft, "dialog");
+        });
     }
 
     @Override
@@ -96,5 +126,13 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback {
         // For zooming automatically to the location of the marker
         CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // according to map lifecycle
+        map.onDestroy();
+        presenter.detachView();
     }
 }

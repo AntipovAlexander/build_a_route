@@ -3,6 +3,7 @@ package com.antipov.buildaroute.di.component;
 
 import com.antipov.buildaroute.di.module.ActivityModule;
 import com.antipov.buildaroute.ui.activity.MainActivity;
+import com.antipov.buildaroute.ui.fragment.map.MapFragment;
 
 import dagger.Component;
 
@@ -15,5 +16,5 @@ import dagger.Component;
         dependencies = AppComponent.class, // inheriting dependencies from AppModule.class
         modules = ActivityModule.class)
 public interface ActivityComponent {
-    void inject(MainActivity mainActivity);
+    void inject(MapFragment mapFragment);
 }
