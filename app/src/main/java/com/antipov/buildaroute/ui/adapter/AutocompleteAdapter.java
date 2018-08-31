@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.antipov.buildaroute.data.pojo.WayPoint;
+import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 
 import java.util.ArrayList;
 import java.util.List;

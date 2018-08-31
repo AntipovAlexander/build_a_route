@@ -14,7 +14,7 @@ import android.widget.ProgressBar;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.common.Const;
-import com.antipov.buildaroute.data.pojo.WayPoint;
+import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 import com.antipov.buildaroute.ui.adapter.AutocompleteAdapter;
 import com.antipov.buildaroute.ui.base.BaseDialogFragment;
 import com.jakewharton.rxbinding2.widget.RxTextView;

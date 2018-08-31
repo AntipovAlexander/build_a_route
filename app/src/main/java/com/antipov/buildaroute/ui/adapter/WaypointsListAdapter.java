@@ -5,12 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.antipov.buildaroute.R;
-import com.antipov.buildaroute.data.pojo.WayPoint;
+import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +47,10 @@ public class WaypointsListAdapter extends RecyclerView.Adapter<WaypointsListAdap
     public void add(WayPoint item) {
         data.add(item);
         notifyItemInserted(data.size());
+    }
+
+    public List<WayPoint> getData() {
+        return data;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

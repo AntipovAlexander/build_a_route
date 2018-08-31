@@ -1,4 +1,4 @@
-package com.antipov.buildaroute.data.pojo;
+package com.antipov.buildaroute.data.pojo.autocomplete;
 
 import android.os.Parcel;
 import android.os.Parcelable;

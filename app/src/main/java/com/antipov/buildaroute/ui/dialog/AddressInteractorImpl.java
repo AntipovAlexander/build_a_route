@@ -3,7 +3,7 @@ package com.antipov.buildaroute.ui.dialog;
 import com.antipov.buildaroute.api.Api;
 import com.antipov.buildaroute.api.RetrofitUtils;
 import com.antipov.buildaroute.common.Const;
-import com.antipov.buildaroute.data.pojo.AutocompleteResults;
+import com.antipov.buildaroute.data.pojo.autocomplete.AutocompleteResults;
 import com.antipov.buildaroute.ui.base.BaseInteractor;
 import com.antipov.buildaroute.utils.rx.SchedulerProvider;
 

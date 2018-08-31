@@ -1,6 +1,6 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
-import com.antipov.buildaroute.data.pojo.WayPoint;
+import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 
 import org.junit.After;
 import org.junit.Before;
@@ -65,8 +65,8 @@ public class MapPresenterImplTest {
 
     @Test
     public void onAddressSelected() {
-        presenter.onAddressSelected(WayPoint.getForTests());
-        Mockito.verify(mockedMapView).addMarker(ArgumentMatchers.anyFloat(), ArgumentMatchers.anyFloat());
+        presenter.onAddressSelected(WayPoint.getForTests(), requestCode);
+        Mockito.verify(mockedMapView).addMarker(ArgumentMatchers.anyFloat(), ArgumentMatchers.anyFloat(), requestCode);
         Mockito.verifyNoMoreInteractions(mockedMapView);
     }
 }

@@ -12,6 +12,8 @@
     <string name="type">Type the address</string>
     <string name="not_found">Not found, try another destination</string>
     <string name="waypoints_limit_reached">Waypoints limit reached</string>
+    <string name="choose_start">Please, choose start point</string>
+    <string name="choose_end">Please choose finish point</string>
     <string-array name="tabs_name">
         <item>Map</item>
         <item>History</item>

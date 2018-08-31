@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -15,18 +16,25 @@ import android.widget.TextView;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.common.Const;
-import com.antipov.buildaroute.data.pojo.WayPoint;
+import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 import com.antipov.buildaroute.ui.adapter.WaypointsListAdapter;
 import com.antipov.buildaroute.ui.base.BaseFragment;
 import com.antipov.buildaroute.ui.dialog.AddressDialog;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -35,6 +43,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.app.Activity.RESULT_OK;
+import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_ADDRESS;
+import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_FINISH;
+import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_START;
 
 public class MapFragment extends BaseFragment implements com.antipov.buildaroute.ui.fragment.map.MapView,
         OnMapReadyCallback {
@@ -46,16 +57,18 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @BindView(R.id.tv_start_point) TextView startPoint;
     @BindView(R.id.tv_end_point) TextView endPoint;
     @BindView(R.id.btn_add_between) Button addInBetween;
+    @BindView(R.id.btn_start) Button startDriving;
     @BindView(R.id.points_recycler) RecyclerView waypoints;
 
+    private final int ROUTE_MAP_PADDING = 100;
     private final String DIALOG_TAG = "address-dialog";
-    private final int REQUEST_GET_START = 1;
-    private final int REQUEST_GET_FINISH = 2;
-    private final int REQUEST_GET_ADDRESS = 8;
     private GoogleMap googleMap;
     private WayPoint start;
     private WayPoint finish;
     private WaypointsListAdapter adapter;
+    private Polyline route;
+    private Marker startMarker;
+    private Marker finishMarker;
 
     @Override
     public void onStart() {
@@ -128,6 +141,8 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         endPoint.setOnClickListener(l -> presenter.addStartOrFinish(REQUEST_GET_FINISH));
         // for picking in-between point
         addInBetween.setOnClickListener(l -> presenter.addWayPoint(REQUEST_GET_ADDRESS));
+        // for start driving
+        startDriving.setOnClickListener(l -> presenter.startDriving());
     }
 
     /**
@@ -135,9 +150,9 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
      * @see AddressDialog
      *
      * take as parameter request codes:
-     * @see #REQUEST_GET_ADDRESS
-     * @see #REQUEST_GET_FINISH
-     * @see #REQUEST_GET_FINISH
+     * @see Const.Requests#REQUEST_GET_START
+     * @see Const.Requests#REQUEST_GET_FINISH
+     * @see Const.Requests#REQUEST_GET_FINISH
      *
      * @param request request code
      */
@@ -158,7 +173,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
      * when address was picked
      *
      * @param requestCode - request code
-     *                    @see #REQUEST_GET_FINISH
+     *                    @see Const.Requests#REQUEST_GET_FINISH
      * @param resultCode - result code
      *                   @see android.app.Activity#RESULT_OK
      * @param data - intent with selected address
@@ -178,29 +193,57 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
                 case REQUEST_GET_ADDRESS:
                     insertWayPoint(item);
             }
-            presenter.onAddressSelected(item);
+            presenter.onAddressSelected(item, requestCode);
         }
     }
 
     /**
      * method for adding marker to map
-     *
-     * @param lat - lat
+     *  @param lat - lat
      * @param lng - lng
+     * @param requestCode
      */
     @Override
-    public void addMarker(float lat, float lng) {
+    public void addMarker(float lat, float lng, int requestCode) {
         if (googleMap != null) {
-            LatLng marker = new LatLng(lat, lng);
-            googleMap.addMarker(new MarkerOptions().position(marker));
+            // placing marker in the map
+            LatLng coordinates = new LatLng(lat, lng);
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(coordinates));
+
+            // animating camera
             CameraPosition cameraPosition =
                     new CameraPosition
                     .Builder()
-                    .target(marker)
+                    .target(coordinates)
                     .zoom(12)
                     .build();
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+            switch (requestCode){
+                case REQUEST_GET_START:
+                    startMarker = marker;
+                    break;
+                case REQUEST_GET_FINISH:
+                    finishMarker = marker;
+                    break;
+            }
         }
+    }
+
+    /**
+     * remove old start marker
+     */
+    @Override
+    public void removeOldStart() {
+        if (startMarker != null) startMarker.remove();
+    }
+
+    /**
+     * remove old finish marker
+     */
+    @Override
+    public void removeOldFinish() {
+        if (finishMarker != null) finishMarker.remove();
     }
 
     /**
@@ -230,6 +273,102 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         onError(R.string.waypoints_limit_reached);
     }
 
+    /**
+     * @return waypoint of the start
+     */
+    @Override
+    @Nullable
+    public WayPoint getStartPoint() {
+        return start;
+    }
+
+    /**
+     * @return waypoint of the finish
+     */
+    @Override
+    @Nullable
+    public WayPoint getFinishPoint() {
+        return finish;
+    }
+
+    /**
+     * calls if start is not selected
+     */
+    @Override
+    public void notifyNullStart() {
+        onError(R.string.choose_start);
+    }
+
+    /**
+     * calls if finish is not selected
+     */
+    @Override
+    public void notifyNullFinish() {
+        onError(R.string.choose_end);
+    }
+
+    /**
+     * @return waypoints from adapter
+     */
+    @Override
+    public List<WayPoint> getWaypoints() {
+        return adapter.getData();
+    }
+
+    /**
+     * @param formattedAddress - text for start view
+     */
+    @Override
+    public void updateStartText(String formattedAddress) {
+        startPoint.setText(formattedAddress);
+    }
+
+    /**
+     * @param formattedAddress - text for finish view
+     */
+    @Override
+    public void updateFinishText(String formattedAddress) {
+        endPoint.setText(formattedAddress);
+    }
+
+    /**
+     * clearing map from old polylines
+     */
+    @Override
+    public void removeOldPolyline() {
+        if (route != null) route.remove();
+    }
+
+    /**
+     * adds new polyline
+     * @param coordinates - encoded route coordinates
+     */
+    @Override
+    public void createNewPolyline(String coordinates) {
+        // encoding string polyline
+        List<LatLng> encoded = PolyUtil.decode(coordinates);
+
+        // creating polyline
+        PolylineOptions lineOptions = new PolylineOptions();
+        lineOptions.addAll(encoded);
+        lineOptions.width(5);
+        lineOptions.color(ContextCompat.getColor(Objects.requireNonNull(getBaseActivity()), R.color.colorAccent));
+
+        // calculating polyline bounds
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (LatLng coordinate : encoded) {
+            builder.include(coordinate);
+        }
+
+        // zooming camera to show route
+        final CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), ROUTE_MAP_PADDING);
+
+        if (googleMap != null) {
+            googleMap.animateCamera(cu);
+            route = googleMap.addPolyline(lineOptions);
+        }
+    }
+
     @Override
     public void showLoadingFullscreen() {
 
@@ -248,27 +387,6 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-
-//        String polyline = "kvkmElvvnU|@Tx@v@\\`ABjAF|Zn@?Cc\\q@{Aw@}@eDkAaD]}ADcJlB{Bp@yAd@aAQyDmA_AW_CBuAh@gJ~HeCxB}@nAmI~HoIbJgPjQk@h@aDnF{C|I{BvMwB|NyAvFaMfYe`@h|@cGjKuFnLoTfj@_I`RiItRSBKDu@vAeCtDeMzMyCzC}DbFsApDi@pDE~D\\zD~AjFdCzHb@h@b@hC`@fDTrGNve@HtYLxpAFrv@BnTYzKu@`IoAtH}HlXsGbTmIjXwLf`@_BzDyFbLeSz\\s[pi@uG`LwBrE_DzKuApJ]hH?rZB~u@Hbs@DjLMlCCLE|DGtDS~Hw@zGsClM}BjHmB`DoAdAgBx@mD|@EFOP}BRwIj@eFNiSf@w[n@wz@hBgMJkd@q@yXa@}QY}[g@kGYgHq@mFu@oMkCgLoD_JqDqAw@c@c@yFuCeOiI}FmCgAk@eBuA{DoG_Ai@gAQeAHeBjAkF|FuBxAGTaIrEgIvEy\\|RyDlCiDfDyErGkIjMeO…LcVbu@YvBcBvGqDpKkKvZ}G~QuBdEyExGgDzC{C|BeBz@yFlAyE?kGe@{GVcG]qKkAqH?cIJyEb@uGxAmEbBkKlEkBvAw@fAyA`Ei@nHqDlb@c@xHQpEDlC@rEq@dEaFfKgIlOkFjJwHrKkGvFqKvIcEfEyEjHyJnOiC|F{AxE{H~ZoBxHeD|KyIvWkFrOcDhJuArFqGx\\yB`NqDtWaC`RwAbGuBlFyC~G_GvOuG|PiJlPsL|QiDhDsCrBgKtFqE`C_C`BiCpCoAnBcI`OqF|H_CzBsE~CqUfLkChB}BfCyBvDiBtGc@rDKxDWlLs@jEwAjEeC|EqLzU}IrPaCrCwAlAiDjBqAf@aMvCgIjBiDl@_E|@iCx@{EvB{HnF{CrCkEjFeHzIcCbCkFdD{DrCoGrGkDdDM?iC|ByB~AaHjEo@p@sAtBu@hAg@^e@b@{@pBc@vAD~@TfCOfBkAlH{@vDw@jDSEWGWAi@HsCl@kAt@iAFYMOo@Qw@^OJAlBXRA";
-//
-//        List<LatLng> polyz = PolyUtil.decode(polyline);
-//
-//        if (polyz != null) {
-//            PolylineOptions lineOptions = new PolylineOptions();
-//            lineOptions.addAll(polyz);
-//            lineOptions.width(5);
-//            lineOptions.color(ContextCompat.getColor(getActivity(), R.color.colorAccent));
-//            googleMap.addPolyline(lineOptions);
-//        }
-
-//
-//        // For dropping a marker at a point on the Map
-//        LatLng sydney = new LatLng(-34, 151);
-//        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
-//
-//        // For zooming automatically to the location of the marker
-//        CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-//        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override

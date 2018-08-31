@@ -1,9 +1,15 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
-import com.antipov.buildaroute.data.pojo.WayPoint;
+import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 import com.antipov.buildaroute.ui.base.BasePresenter;
+import com.antipov.buildaroute.utils.converter.ArgsConverter;
+
+import java.util.List;
 
 import javax.inject.Inject;
+
+import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_FINISH;
+import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_START;
 
 public class MapPresenterImpl <V extends MapView, I extends MapInteractor> extends BasePresenter<V, I>
         implements MapPresenter<V, I> {
@@ -31,8 +37,61 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
     }
 
     @Override
-    public void onAddressSelected(WayPoint item) {
+    public void onAddressSelected(WayPoint item, int requestCode) {
         if (isViewNotAttached()) return;
-        getView().addMarker(item.getGeometry().getLocation().getLat(), item.getGeometry().getLocation().getLng());
+
+        // updating views according to request code
+        switch (requestCode) {
+            case REQUEST_GET_START:
+                getView().updateStartText(item.getFormattedAddress());
+                getView().removeOldStart();
+                break;
+            case REQUEST_GET_FINISH:
+                getView().updateFinishText(item.getFormattedAddress());
+                getView().removeOldFinish();
+                break;
+        }
+
+        // place marker in the map
+        getView().addMarker(
+                item.getGeometry().getLocation().getLat(),
+                item.getGeometry().getLocation().getLng(),
+                requestCode
+        );
+    }
+
+    @Override
+    public void startDriving() {
+        if (isViewNotAttached()) return;
+
+        WayPoint start = getView().getStartPoint();
+        WayPoint finish = getView().getFinishPoint();
+        List<WayPoint> wayPoints = getView().getWaypoints();
+
+        // start can't be null
+        if (start == null) {
+            getView().notifyNullStart();
+            return;
+        }
+
+        // finish can't be null
+        if (finish == null) {
+            getView().notifyNullFinish();
+            return;
+        }
+
+        getInteractor().calculateRoute(
+                ArgsConverter.convert(start.getGeometry().getLocation()),
+                ArgsConverter.convert(finish.getGeometry().getLocation()),
+                ArgsConverter.convertToWaypoint(wayPoints)
+        ).subscribe(
+                directionsResults -> {
+                    if (isViewNotAttached()) return;
+                    getView().removeOldPolyline();
+                    getView().createNewPolyline(directionsResults.toString());
+                },
+                throwable -> {}
+        );
+
     }
 }

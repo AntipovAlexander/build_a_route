@@ -1,4 +1,4 @@
-package com.antipov.buildaroute.data.pojo;
+package com.antipov.buildaroute.data.pojo.autocomplete;
 
 import java.util.ArrayList;
 import java.util.List;
