@@ -16,10 +16,13 @@ import com.antipov.buildaroute.common.Const;
 import com.antipov.buildaroute.data.pojo.AutocompleteItem;
 import com.antipov.buildaroute.ui.base.BaseFragment;
 import com.antipov.buildaroute.ui.dialog.AddressDialog;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
@@ -127,17 +130,32 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQUEST_GET_START:
-                if (resultCode == RESULT_OK) {
-                    start = data.getParcelableExtra(Const.Args.SELECTED_ADDRESS);
-                }
-                break;
-            case REQUEST_GET_FINISH:
-                if (resultCode == RESULT_OK) {
-                    finish = data.getParcelableExtra(Const.Args.SELECTED_ADDRESS);
-                }
-                break;
+        if (resultCode == RESULT_OK) {
+            AutocompleteItem item = data.getParcelableExtra(Const.Args.SELECTED_ADDRESS);
+            switch (requestCode) {
+                case REQUEST_GET_START:
+                    start = item;
+                    break;
+                case REQUEST_GET_FINISH:
+                    finish = item;
+                    break;
+            }
+            presenter.onAddressSelected(item);
+        }
+    }
+
+    @Override
+    public void addMarker(float lat, float lng) {
+        if (googleMap != null) {
+            LatLng marker = new LatLng(lat, lng);
+            googleMap.addMarker(new MarkerOptions().position(marker));
+            CameraPosition cameraPosition =
+                    new CameraPosition
+                    .Builder()
+                    .target(marker)
+                    .zoom(12)
+                    .build();
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
 
