@@ -58,4 +58,12 @@ public class WayPoint implements Parcelable {
             return new WayPoint[size];
         }
     };
+
+    static public WayPoint getForTests() {
+        WayPoint wayPoint = new WayPoint();
+        Geometry geometry = new Geometry();
+        geometry.setLocation(new Location());
+        wayPoint.setGeometry(geometry);
+        return wayPoint;
+    }
 }
