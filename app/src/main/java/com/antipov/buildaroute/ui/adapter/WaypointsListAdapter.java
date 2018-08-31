@@ -19,9 +19,11 @@ import butterknife.ButterKnife;
 
 public class WaypointsListAdapter extends RecyclerView.Adapter<WaypointsListAdapter.ViewHolder> {
 
+    private final OnWaypointDeleteListener listener;
     private List<WayPoint> data = new ArrayList<>();
 
-    public WaypointsListAdapter() {
+    public WaypointsListAdapter(OnWaypointDeleteListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -30,7 +32,15 @@ public class WaypointsListAdapter extends RecyclerView.Adapter<WaypointsListAdap
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.recycler_item_waypoint, viewGroup, false);
         ViewHolder vh = new ViewHolder(view);
-        vh.delete.setOnClickListener(l -> {});
+        vh.delete.setOnClickListener(l -> {
+            int position = vh.getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                // remove marker
+                data.remove(position);
+                listener.onWaypointDeleteListener(position);
+                notifyItemRemoved(position);
+            }
+        });
         return vh;
     }
 
@@ -61,5 +71,9 @@ public class WaypointsListAdapter extends RecyclerView.Adapter<WaypointsListAdap
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnWaypointDeleteListener {
+        void onWaypointDeleteListener(int i);
     }
 }

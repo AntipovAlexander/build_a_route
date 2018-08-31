@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +49,7 @@ import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_FINISH;
 import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_START;
 
 public class MapFragment extends BaseFragment implements com.antipov.buildaroute.ui.fragment.map.MapView,
-        OnMapReadyCallback {
+        OnMapReadyCallback, WaypointsListAdapter.OnWaypointDeleteListener {
 
     @Inject
     MapPresenter<com.antipov.buildaroute.ui.fragment.map.MapView, MapInteractor> presenter;
@@ -69,6 +70,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     private Polyline route;
     private Marker startMarker;
     private Marker finishMarker;
+    private List<Marker> markers = new ArrayList<>();
 
     @Override
     public void onStart() {
@@ -92,7 +94,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
 
     private void initAdapter() {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getBaseActivity());
-        adapter = new WaypointsListAdapter();
+        adapter = new WaypointsListAdapter(this);
         waypoints.setLayoutManager(layoutManager);
         waypoints.setAdapter(adapter);
     }
@@ -143,6 +145,17 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         addInBetween.setOnClickListener(l -> presenter.addWayPoint(REQUEST_GET_ADDRESS));
         // for start driving
         startDriving.setOnClickListener(l -> presenter.startDriving());
+    }
+
+    /**
+     * method for removing marker from map
+     *
+     * @param i - marker position
+     */
+    @Override
+    public void onWaypointDeleteListener(int i) {
+        markers.get(i).remove();
+        markers.remove(i);
     }
 
     /**
@@ -225,6 +238,8 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
                     break;
                 case REQUEST_GET_FINISH:
                     finishMarker = marker;
+                case REQUEST_GET_ADDRESS:
+                    markers.add(marker);
                     break;
             }
         }
