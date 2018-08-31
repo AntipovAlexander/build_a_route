@@ -387,12 +387,12 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
 
     @Override
     public void showLoadingFullscreen() {
-
+        showLoading();
     }
 
     @Override
     public void hideLoadingFullscreen() {
-
+        hideLoading();
     }
 
     /**

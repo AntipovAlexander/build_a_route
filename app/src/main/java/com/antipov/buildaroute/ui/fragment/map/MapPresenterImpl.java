@@ -64,18 +64,23 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
     public void startDriving() {
         if (isViewNotAttached()) return;
 
+        getView().showLoadingFullscreen();
+
+        // get way points
         WayPoint start = getView().getStartPoint();
         WayPoint finish = getView().getFinishPoint();
         List<WayPoint> wayPoints = getView().getWaypoints();
 
         // start can't be null
         if (start == null) {
+            getView().hideLoadingFullscreen();
             getView().notifyNullStart();
             return;
         }
 
         // finish can't be null
         if (finish == null) {
+            getView().hideLoadingFullscreen();
             getView().notifyNullFinish();
             return;
         }
@@ -87,10 +92,21 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
         ).subscribe(
                 directionsResults -> {
                     if (isViewNotAttached()) return;
-                    getView().removeOldPolyline();
-                    getView().createNewPolyline(directionsResults.toString());
+                    getView().hideLoadingFullscreen();
+                    if (!directionsResults.isSuccess()) {
+                        // in case when status isn't OK
+                        getView().onError(directionsResults.getStatus());
+                    } else {
+                        // in case of success
+                        getView().removeOldPolyline();
+                        getView().createNewPolyline(directionsResults.toString());
+                    }
                 },
-                throwable -> {}
+                throwable -> {
+                    if (isViewNotAttached()) return;
+                    getView().hideLoadingFullscreen();
+                    getView().onError(throwable.getMessage());
+                }
         );
 
     }

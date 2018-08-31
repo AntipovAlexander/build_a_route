@@ -5,6 +5,7 @@ import java.util.List;
 public class DirectionsResults {
 
     private List<Route> routes;
+    private String status;
 
     public List<Route> getRoutes() {
         return routes;
@@ -14,8 +15,20 @@ public class DirectionsResults {
         this.routes = routes;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return getRoutes().get(0).getPolyline().getPolyline();
+    }
+
+    public boolean isSuccess() {
+        return status.toLowerCase().equals("ok");
     }
 }
