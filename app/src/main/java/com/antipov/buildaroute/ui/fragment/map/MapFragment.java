@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,7 +19,12 @@ import com.antipov.buildaroute.ui.dialog.AddressDialog;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -148,6 +154,19 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+
+//        String polyline = "kvkmElvvnU|@Tx@v@\\`ABjAF|Zn@?Cc\\q@{Aw@}@eDkAaD]}ADcJlB{Bp@yAd@aAQyDmA_AW_CBuAh@gJ~HeCxB}@nAmI~HoIbJgPjQk@h@aDnF{C|I{BvMwB|NyAvFaMfYe`@h|@cGjKuFnLoTfj@_I`RiItRSBKDu@vAeCtDeMzMyCzC}DbFsApDi@pDE~D\\zD~AjFdCzHb@h@b@hC`@fDTrGNve@HtYLxpAFrv@BnTYzKu@`IoAtH}HlXsGbTmIjXwLf`@_BzDyFbLeSz\\s[pi@uG`LwBrE_DzKuApJ]hH?rZB~u@Hbs@DjLMlCCLE|DGtDS~Hw@zGsClM}BjHmB`DoAdAgBx@mD|@EFOP}BRwIj@eFNiSf@w[n@wz@hBgMJkd@q@yXa@}QY}[g@kGYgHq@mFu@oMkCgLoD_JqDqAw@c@c@yFuCeOiI}FmCgAk@eBuA{DoG_Ai@gAQeAHeBjAkF|FuBxAGTaIrEgIvEy\\|RyDlCiDfDyErGkIjMeO…LcVbu@YvBcBvGqDpKkKvZ}G~QuBdEyExGgDzC{C|BeBz@yFlAyE?kGe@{GVcG]qKkAqH?cIJyEb@uGxAmEbBkKlEkBvAw@fAyA`Ei@nHqDlb@c@xHQpEDlC@rEq@dEaFfKgIlOkFjJwHrKkGvFqKvIcEfEyEjHyJnOiC|F{AxE{H~ZoBxHeD|KyIvWkFrOcDhJuArFqGx\\yB`NqDtWaC`RwAbGuBlFyC~G_GvOuG|PiJlPsL|QiDhDsCrBgKtFqE`C_C`BiCpCoAnBcI`OqF|H_CzBsE~CqUfLkChB}BfCyBvDiBtGc@rDKxDWlLs@jEwAjEeC|EqLzU}IrPaCrCwAlAiDjBqAf@aMvCgIjBiDl@_E|@iCx@{EvB{HnF{CrCkEjFeHzIcCbCkFdD{DrCoGrGkDdDM?iC|ByB~AaHjEo@p@sAtBu@hAg@^e@b@{@pBc@vAD~@TfCOfBkAlH{@vDw@jDSEWGWAi@HsCl@kAt@iAFYMOo@Qw@^OJAlBXRA";
+//
+//        List<LatLng> polyz = PolyUtil.decode(polyline);
+//
+//        if (polyz != null) {
+//            PolylineOptions lineOptions = new PolylineOptions();
+//            lineOptions.addAll(polyz);
+//            lineOptions.width(5);
+//            lineOptions.color(ContextCompat.getColor(getActivity(), R.color.colorAccent));
+//            googleMap.addPolyline(lineOptions);
+//        }
+
 //
 //        // For dropping a marker at a point on the Map
 //        LatLng sydney = new LatLng(-34, 151);

@@ -35,6 +35,8 @@ ext {
     butterKnife = '8.8.1'
     rxJava = '2.0.2'
     rxAndroid = '1.1.0'
+    rxBinding = '2.1.1'
+    mapUtils = '0.5'
     retrofit = '2.1.0'
     logsInterceptor = '3.8.0'
     gson = '2.3.0'

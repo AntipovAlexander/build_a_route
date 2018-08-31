@@ -64,8 +64,9 @@ dependencies {
     // maps
     implementation "com.google.android.gms:play-services-maps:$rootProject.maps"
 
-    implementation 'com.jakewharton.rxbinding2:rxbinding:2.1.1'
-//    implementation 'com.jakewharton.rxbinding2:rxbinding-design:2.1.1'
+    implementation "com.google.maps.android:android-maps-utils:$rootProject.mapUtils"
+
+    implementation "com.jakewharton.rxbinding2:rxbinding:$rootProject.rxBinding"
 
     // material dialog
     implementation("com.afollestad.material-dialogs:$rootProject.materialDialogCore") {
