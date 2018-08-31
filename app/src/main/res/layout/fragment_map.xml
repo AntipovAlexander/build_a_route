@@ -57,13 +57,28 @@
                 android:layout_below="@+id/points_recycler"/>
 
             <Button
-                android:id="@+id/btn_start"
-                android:layout_width="match_parent"
+                android:id="@+id/btn_build_route"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/build_route"
+                android:layout_centerHorizontal="true"
+                style="@style/MapButtons"
+                android:drawablePadding="8dp"
+                android:drawableStart="@drawable/ic_navigation"
+                android:layout_below="@+id/btn_add_between"/>
+
+            <Button
+                android:id="@+id/btn_start_driving"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/MapButtons"
+                android:layout_centerHorizontal="true"
+                android:drawableStart="@drawable/ic_local_taxi"
+                android:drawablePadding="8dp"
                 android:text="@string/start_driving"
                 android:textColor="@color/colorAccent"
-                style="@style/MapButtons"
-                android:layout_below="@+id/btn_add_between"/>
+                android:layout_below="@id/btn_build_route"
+                />
         </RelativeLayout>
 
     </ScrollView>

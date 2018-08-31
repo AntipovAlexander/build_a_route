@@ -61,7 +61,7 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
     }
 
     @Override
-    public void startDriving() {
+    public void buildRoute() {
         if (isViewNotAttached()) return;
 
         getView().showLoadingFullscreen();

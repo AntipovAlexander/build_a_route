@@ -10,5 +10,5 @@ public interface MapPresenter<V extends MapView, I extends MapInteractor> extend
 
     void onAddressSelected(WayPoint item, int requestCode);
 
-    void startDriving();
+    void buildRoute();
 }

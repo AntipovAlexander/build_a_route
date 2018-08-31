@@ -58,7 +58,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @BindView(R.id.tv_start_point) TextView startPoint;
     @BindView(R.id.tv_end_point) TextView endPoint;
     @BindView(R.id.btn_add_between) Button addInBetween;
-    @BindView(R.id.btn_start) Button startDriving;
+    @BindView(R.id.btn_build_route) Button buildRoute;
     @BindView(R.id.points_recycler) RecyclerView waypoints;
 
     private final int ROUTE_MAP_PADDING = 100;
@@ -144,7 +144,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         // for picking in-between point
         addInBetween.setOnClickListener(l -> presenter.addWayPoint(REQUEST_GET_ADDRESS));
         // for start driving
-        startDriving.setOnClickListener(l -> presenter.startDriving());
+        buildRoute.setOnClickListener(l -> presenter.buildRoute());
     }
 
     /**
