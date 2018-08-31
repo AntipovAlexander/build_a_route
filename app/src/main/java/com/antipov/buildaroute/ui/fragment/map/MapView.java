@@ -37,4 +37,6 @@ public interface MapView extends IBaseView {
     void removeOldFinish();
 
     void removeOldStart();
+
+    void animateDriving(Long t);
 }

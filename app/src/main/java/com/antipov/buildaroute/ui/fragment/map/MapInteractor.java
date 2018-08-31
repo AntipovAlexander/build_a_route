@@ -7,4 +7,6 @@ import rx.Observable;
 
 public interface MapInteractor extends IBaseInteractor {
     Observable<DirectionsResults> calculateRoute(String origin, String destination, String waypoints);
+
+    Observable<Long> getAnimationObservable(int animationSpeed);
 }

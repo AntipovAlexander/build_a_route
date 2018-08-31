@@ -20,11 +20,14 @@ import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 import com.antipov.buildaroute.ui.adapter.WaypointsListAdapter;
 import com.antipov.buildaroute.ui.base.BaseFragment;
 import com.antipov.buildaroute.ui.dialog.AddressDialog;
+import com.antipov.buildaroute.utils.BitmapUtils;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -59,6 +62,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @BindView(R.id.tv_end_point) TextView endPoint;
     @BindView(R.id.btn_add_between) Button addInBetween;
     @BindView(R.id.btn_build_route) Button buildRoute;
+    @BindView(R.id.btn_start_driving) Button startDriving;
     @BindView(R.id.points_recycler) RecyclerView waypoints;
 
     private final int ROUTE_MAP_PADDING = 100;
@@ -70,7 +74,9 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     private Polyline route;
     private Marker startMarker;
     private Marker finishMarker;
+    private Marker car;
     private List<Marker> markers = new ArrayList<>();
+    private List<LatLng> routeCoordinates;
 
     @Override
     public void onStart() {
@@ -143,8 +149,10 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         endPoint.setOnClickListener(l -> presenter.addStartOrFinish(REQUEST_GET_FINISH));
         // for picking in-between point
         addInBetween.setOnClickListener(l -> presenter.addWayPoint(REQUEST_GET_ADDRESS));
-        // for start driving
+        // for building route
         buildRoute.setOnClickListener(l -> presenter.buildRoute());
+        // for simulating driving
+        startDriving.setOnClickListener(l -> presenter.simulateDriving(routeCoordinates));
     }
 
     /**
@@ -220,14 +228,14 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     public void addMarker(float lat, float lng, int requestCode) {
         if (googleMap != null) {
             // placing marker in the map
-            LatLng coordinates = new LatLng(lat, lng);
-            Marker marker = googleMap.addMarker(new MarkerOptions().position(coordinates));
+            LatLng coordinate = new LatLng(lat, lng);
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(coordinate));
 
             // animating camera
             CameraPosition cameraPosition =
                     new CameraPosition
                     .Builder()
-                    .target(coordinates)
+                    .target(coordinate)
                     .zoom(12)
                     .build();
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -362,17 +370,17 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @Override
     public void createNewPolyline(String coordinates) {
         // encoding string polyline
-        List<LatLng> encoded = PolyUtil.decode(coordinates);
+        routeCoordinates = PolyUtil.decode(coordinates);
 
         // creating polyline
         PolylineOptions lineOptions = new PolylineOptions();
-        lineOptions.addAll(encoded);
+        lineOptions.addAll(routeCoordinates);
         lineOptions.width(5);
         lineOptions.color(ContextCompat.getColor(Objects.requireNonNull(getBaseActivity()), R.color.colorAccent));
 
         // calculating polyline bounds
         LatLngBounds.Builder builder = LatLngBounds.builder();
-        for (LatLng coordinate : encoded) {
+        for (LatLng coordinate : routeCoordinates) {
             builder.include(coordinate);
         }
 
@@ -382,6 +390,21 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         if (googleMap != null) {
             googleMap.animateCamera(cu);
             route = googleMap.addPolyline(lineOptions);
+        }
+    }
+
+    /**
+     * method for animating marker
+     * @param t index for coordinate
+     */
+    @Override
+    public void animateDriving(Long t) {
+        if (car == null) {
+            car = googleMap.addMarker(new MarkerOptions().position(routeCoordinates.get(0)));
+            BitmapDescriptor icon = BitmapUtils.getBitmapDescriptor(getBaseActivity(), R.drawable.ic_local_taxi);
+            car.setIcon(icon);
+        } else {
+            car.setPosition(routeCoordinates.get(t.intValue()));
         }
     }
 

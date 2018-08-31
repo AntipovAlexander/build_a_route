@@ -1,12 +1,18 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
+import android.util.Log;
+
 import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 import com.antipov.buildaroute.ui.base.BasePresenter;
 import com.antipov.buildaroute.utils.converter.ArgsConverter;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
 import javax.inject.Inject;
+
+import io.reactivex.disposables.Disposable;
+import rx.Subscription;
 
 import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_FINISH;
 import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_START;
@@ -15,6 +21,9 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
         implements MapPresenter<V, I> {
 
     private final int WAYPOINTS_LIMIT = 5;
+    private final int ANIMATION_SPEED = 1;
+    private Disposable disposable;
+    private Subscription subs;
 
     @Inject
     public MapPresenterImpl(I interactor) {
@@ -109,5 +118,32 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
                 }
         );
 
+    }
+
+    @Override
+    public void simulateDriving(List<LatLng> routeCoordinates) {
+        if (isViewNotAttached()) return;
+
+        if (subs != null) {
+            subs.unsubscribe();
+            subs = null;
+        } else {
+            subs = getInteractor()
+                    .getAnimationObservable(ANIMATION_SPEED)
+                    .subscribe(tick -> {
+                            if (isViewNotAttached()) return;
+                            getView().animateDriving(tick);
+                        },
+                            throwable -> {
+                                if (isViewNotAttached()) return;
+                                getView().onError(throwable.getMessage());
+                            });
+        }
+
+
+//        disposable = Observable
+//                .interval(ANIMATION_SPEED, TimeUnit.SECONDS)
+//                .observeOn()
+//                .subscribe();
     }
 }
