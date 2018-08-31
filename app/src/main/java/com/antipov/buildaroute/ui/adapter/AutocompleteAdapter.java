@@ -9,13 +9,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.antipov.buildaroute.data.pojo.AutocompleteItem;
+import com.antipov.buildaroute.data.pojo.WayPoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AutocompleteAdapter extends ArrayAdapter<AutocompleteItem> {
-    private final List<AutocompleteItem> data;
+public class AutocompleteAdapter extends ArrayAdapter<WayPoint> {
+    private final List<WayPoint> data;
     private final int itemLayout;
     private final OnAutocompleteSelected listener;
 
@@ -33,7 +33,7 @@ public class AutocompleteAdapter extends ArrayAdapter<AutocompleteItem> {
 
     @Nullable
     @Override
-    public AutocompleteItem getItem(int position) {
+    public WayPoint getItem(int position) {
         return data.get(position);
     }
 
@@ -52,13 +52,13 @@ public class AutocompleteAdapter extends ArrayAdapter<AutocompleteItem> {
         return view;
     }
 
-    public void setAutocomplete(List<AutocompleteItem> results) {
+    public void setAutocomplete(List<WayPoint> results) {
         data.clear();
         data.addAll(results);
         notifyDataSetChanged();
     }
 
     public interface OnAutocompleteSelected {
-        void OnAutocompleteSelected(AutocompleteItem item);
+        void OnAutocompleteSelected(WayPoint item);
     }
 }

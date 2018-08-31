@@ -1,10 +1,12 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
-import com.antipov.buildaroute.data.pojo.AutocompleteItem;
+import com.antipov.buildaroute.data.pojo.WayPoint;
 import com.antipov.buildaroute.ui.base.IBasePresenter;
 
 public interface MapPresenter<V extends MapView, I extends MapInteractor> extends IBasePresenter<V, I> {
-    void onMapButtonClick(int request);
+    void addStartOrFinish(int request);
 
-    void onAddressSelected(AutocompleteItem item);
+    void addWayPoint(int request);
+
+    void onAddressSelected(WayPoint item);
 }

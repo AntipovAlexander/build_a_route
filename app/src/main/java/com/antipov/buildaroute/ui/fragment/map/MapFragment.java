@@ -7,13 +7,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.common.Const;
-import com.antipov.buildaroute.data.pojo.AutocompleteItem;
+import com.antipov.buildaroute.data.pojo.WayPoint;
+import com.antipov.buildaroute.ui.adapter.WaypointsListAdapter;
 import com.antipov.buildaroute.ui.base.BaseFragment;
 import com.antipov.buildaroute.ui.dialog.AddressDialog;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,11 +26,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -46,14 +45,17 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @BindView(R.id.map) MapView map;
     @BindView(R.id.tv_start_point) TextView startPoint;
     @BindView(R.id.tv_end_point) TextView endPoint;
+    @BindView(R.id.btn_add_between) Button addInBetween;
+    @BindView(R.id.points_recycler) RecyclerView waypoints;
 
     private final String DIALOG_TAG = "address-dialog";
     private final int REQUEST_GET_START = 1;
     private final int REQUEST_GET_FINISH = 2;
     private final int REQUEST_GET_ADDRESS = 8;
     private GoogleMap googleMap;
-    private AutocompleteItem start;
-    private AutocompleteItem finish;
+    private WayPoint start;
+    private WayPoint finish;
+    private WaypointsListAdapter adapter;
 
     @Override
     public void onStart() {
@@ -69,7 +71,17 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         presenter.attachView(this);
         // according to map lifecycle
         map.onCreate(savedInstanceState);
+        // requesting map
         map.getMapAsync(this);
+        // creating adapter
+        initAdapter();
+    }
+
+    private void initAdapter() {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getBaseActivity());
+        adapter = new WaypointsListAdapter();
+        waypoints.setLayoutManager(layoutManager);
+        waypoints.setAdapter(adapter);
     }
 
     @Override
@@ -110,10 +122,25 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
 
     @Override
     public void initListeners() {
-        startPoint.setOnClickListener(l -> presenter.onMapButtonClick(REQUEST_GET_START));
-        endPoint.setOnClickListener(l -> presenter.onMapButtonClick(REQUEST_GET_FINISH));
+        // for picking start point
+        startPoint.setOnClickListener(l -> presenter.addStartOrFinish(REQUEST_GET_START));
+        // for picking finish point
+        endPoint.setOnClickListener(l -> presenter.addStartOrFinish(REQUEST_GET_FINISH));
+        // for picking in-between point
+        addInBetween.setOnClickListener(l -> presenter.addWayPoint(REQUEST_GET_ADDRESS));
     }
 
+    /**
+     * Method for starting for result address picker dialog
+     * @see AddressDialog
+     *
+     * take as parameter request codes:
+     * @see #REQUEST_GET_ADDRESS
+     * @see #REQUEST_GET_FINISH
+     * @see #REQUEST_GET_FINISH
+     *
+     * @param request request code
+     */
     @Override
     public void showAddressDialog(int request) {
         FragmentTransaction ft = Objects.requireNonNull(getFragmentManager()).beginTransaction();
@@ -127,11 +154,20 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         dialogFragment.show(ft, DIALOG_TAG);
     }
 
+    /**
+     * when address was picked
+     *
+     * @param requestCode - request code
+     *                    @see #REQUEST_GET_FINISH
+     * @param resultCode - result code
+     *                   @see android.app.Activity#RESULT_OK
+     * @param data - intent with selected address
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            AutocompleteItem item = data.getParcelableExtra(Const.Args.SELECTED_ADDRESS);
+            WayPoint item = data.getParcelableExtra(Const.Args.SELECTED_ADDRESS);
             switch (requestCode) {
                 case REQUEST_GET_START:
                     start = item;
@@ -139,11 +175,19 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
                 case REQUEST_GET_FINISH:
                     finish = item;
                     break;
+                case REQUEST_GET_ADDRESS:
+                    insertWayPoint(item);
             }
             presenter.onAddressSelected(item);
         }
     }
 
+    /**
+     * method for adding marker to map
+     *
+     * @param lat - lat
+     * @param lng - lng
+     */
     @Override
     public void addMarker(float lat, float lng) {
         if (googleMap != null) {
@@ -159,6 +203,33 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         }
     }
 
+    /**
+     * @return waypoints count
+     */
+    @Override
+    public int getWaypointsCount() {
+        return adapter.getItemCount();
+    }
+
+
+    /**
+     * adds new item to waypoints list
+     *
+     * @param item new item
+     */
+    @Override
+    public void insertWayPoint(WayPoint item) {
+        adapter.add(item);
+    }
+
+    /**
+     * calles when reached waypoints limit
+     */
+    @Override
+    public void notifyWaypointsLimit() {
+        onError(R.string.waypoints_limit_reached);
+    }
+
     @Override
     public void showLoadingFullscreen() {
 
@@ -169,6 +240,11 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
 
     }
 
+    /**
+     * saving reference to the map when it`s ready
+     *
+     * @param googleMap - map
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;

@@ -32,7 +32,7 @@ public class MapPresenterImplTest {
 
     @Test
     public void onMapButtonClick() {
-        presenter.onMapButtonClick();
+        presenter.addStartOrFinish();
         Mockito.verify(mockedMapView).showAddressDialog(request);
         Mockito.verifyNoMoreInteractions(mockedMapView);
     }

@@ -2,6 +2,7 @@ package com.antipov.buildaroute.ui.dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +14,7 @@ import android.widget.ProgressBar;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.common.Const;
-import com.antipov.buildaroute.data.pojo.AutocompleteItem;
+import com.antipov.buildaroute.data.pojo.WayPoint;
 import com.antipov.buildaroute.ui.adapter.AutocompleteAdapter;
 import com.antipov.buildaroute.ui.base.BaseDialogFragment;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -42,7 +43,7 @@ public class AddressDialog extends BaseDialogFragment implements AddressView, Au
 
     private AutocompleteAdapter adapter;
     private Observable<String> observable;
-    private AutocompleteItem selectedItem;
+    private WayPoint selectedItem;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,7 +108,7 @@ public class AddressDialog extends BaseDialogFragment implements AddressView, Au
 
     @SuppressLint("CheckResult")
     @Override
-    public void OnAutocompleteSelected(AutocompleteItem item) {
+    public void OnAutocompleteSelected(WayPoint item) {
         this.selectedItem = item;
         autoComplete.setText(item.getFormattedAddress());
     }
@@ -125,7 +126,7 @@ public class AddressDialog extends BaseDialogFragment implements AddressView, Au
     }
 
     @Override
-    public void setAutocomplete(List<AutocompleteItem> results) {
+    public void setAutocomplete(List<WayPoint> results) {
         adapter.setAutocomplete(results);
     }
 
@@ -138,6 +139,12 @@ public class AddressDialog extends BaseDialogFragment implements AddressView, Au
     public void onError(String message) {
         super.onError(message);
         autoComplete.setError(message, null);
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        hideKeyboard();
+        super.onDismiss(dialog);
     }
 
     @Override

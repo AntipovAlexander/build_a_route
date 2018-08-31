@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AutocompleteItem implements Parcelable {
+public class WayPoint implements Parcelable {
     @SerializedName("formatted_address")
     private String formattedAddress;
 
@@ -39,23 +39,23 @@ public class AutocompleteItem implements Parcelable {
         dest.writeParcelable(this.geometry, flags);
     }
 
-    public AutocompleteItem() {
+    public WayPoint() {
     }
 
-    protected AutocompleteItem(Parcel in) {
+    protected WayPoint(Parcel in) {
         this.formattedAddress = in.readString();
         this.geometry = in.readParcelable(Geometry.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<AutocompleteItem> CREATOR = new Parcelable.Creator<AutocompleteItem>() {
+    public static final Parcelable.Creator<WayPoint> CREATOR = new Parcelable.Creator<WayPoint>() {
         @Override
-        public AutocompleteItem createFromParcel(Parcel source) {
-            return new AutocompleteItem(source);
+        public WayPoint createFromParcel(Parcel source) {
+            return new WayPoint(source);
         }
 
         @Override
-        public AutocompleteItem[] newArray(int size) {
-            return new AutocompleteItem[size];
+        public WayPoint[] newArray(int size) {
+            return new WayPoint[size];
         }
     };
 }
