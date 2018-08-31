@@ -238,6 +238,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
                     break;
                 case REQUEST_GET_FINISH:
                     finishMarker = marker;
+                    break;
                 case REQUEST_GET_ADDRESS:
                     markers.add(marker);
                     break;
