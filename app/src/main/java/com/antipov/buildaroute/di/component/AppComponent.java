@@ -1,5 +1,6 @@
 package com.antipov.buildaroute.di.component;
 
+import com.antipov.buildaroute.data.db.entities.DaoSession;
 import com.antipov.buildaroute.di.module.AppModule;
 import com.antipov.buildaroute.utils.rx.SchedulerProvider;
 
@@ -16,6 +17,8 @@ public interface AppComponent {
 
     // provide dependencies from app module to dependent components
     SchedulerProvider schedulerProvider();
+
+    DaoSession daoSession();
 
 //    TopPostsRepository topPostsRepository();
 

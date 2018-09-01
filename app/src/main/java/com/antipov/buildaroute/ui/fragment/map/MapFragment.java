@@ -77,6 +77,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     private Marker car;
     private List<Marker> markers = new ArrayList<>();
     private List<LatLng> routeCoordinates;
+    private String encodedRoute;
 
     @Override
     public void onStart() {
@@ -369,6 +370,8 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
      */
     @Override
     public void createNewPolyline(String coordinates) {
+        this.encodedRoute = coordinates;
+
         // encoding string polyline
         routeCoordinates = PolyUtil.decode(coordinates);
 
@@ -424,6 +427,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         showMessage(R.string.finish_reached);
         car.remove();
         car = null;
+        presenter.saveRoute(encodedRoute);
     }
 
     @Override

@@ -9,4 +9,6 @@ public interface MapInteractor extends IBaseInteractor {
     Observable<DirectionsResults> calculateRoute(String origin, String destination, String waypoints);
 
     Observable<Long> getAnimationObservable(int animationSpeed);
+
+    Observable<Long> saveRoute(String encodedRoute);
 }

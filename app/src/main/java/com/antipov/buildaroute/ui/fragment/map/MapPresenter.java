@@ -18,4 +18,6 @@ public interface MapPresenter<V extends MapView, I extends MapInteractor> extend
     void simulateDriving();
 
     void onFinishReached();
+
+    void saveRoute(String encodedRoute);
 }

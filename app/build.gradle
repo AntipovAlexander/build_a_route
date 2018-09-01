@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 28
@@ -67,6 +68,8 @@ dependencies {
     implementation "com.google.maps.android:android-maps-utils:$rootProject.mapUtils"
 
     implementation "com.jakewharton.rxbinding2:rxbinding:$rootProject.rxBinding"
+
+    implementation 'org.greenrobot:greendao:3.2.2'
 
     // material dialog
     implementation("com.afollestad.material-dialogs:$rootProject.materialDialogCore") {

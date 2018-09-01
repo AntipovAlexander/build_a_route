@@ -3,7 +3,6 @@ package com.antipov.buildaroute.ui.fragment.map;
 import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 import com.antipov.buildaroute.ui.base.BasePresenter;
 import com.antipov.buildaroute.utils.converter.ArgsConverter;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -171,5 +170,10 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
         }
         if (isViewNotAttached()) return;
         getView().onFinishReached();
+    }
+
+    @Override
+    public void saveRoute(String encodedRoute) {
+        getInteractor().saveRoute(encodedRoute).subscribe();
     }
 }

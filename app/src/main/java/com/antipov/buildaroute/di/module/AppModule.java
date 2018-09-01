@@ -2,6 +2,9 @@ package com.antipov.buildaroute.di.module;
 
 import android.app.Application;
 
+import com.antipov.buildaroute.data.db.DbOpenHelper;
+import com.antipov.buildaroute.data.db.entities.DaoMaster;
+import com.antipov.buildaroute.data.db.entities.DaoSession;
 import com.antipov.buildaroute.utils.rx.AppSchedulerProvider;
 import com.antipov.buildaroute.utils.rx.SchedulerProvider;
 
@@ -17,26 +20,24 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private final Application mApplication;
-    private final AppSchedulerProvider mScheduleProvider;
+    private final Application application;
+    private final AppSchedulerProvider scheduleProvider;
+    private final DaoSession dao;
 
     public AppModule(Application application, AppSchedulerProvider appSchedulerProvider) {
-        this.mScheduleProvider = appSchedulerProvider;
-        this.mApplication = application;
+        this.scheduleProvider = appSchedulerProvider;
+        this.application = application;
+        this.dao = new DaoMaster(new DbOpenHelper(application, "routes.db").getWritableDb()).newSession();
     }
 
     @Provides
     public SchedulerProvider provideSchedulerProvider() {
-        return this.mScheduleProvider;
+        return this.scheduleProvider;
     }
 
-//    @Provides
-//    public TopPostsRepository provideTopPostsRepository() {
-//        return new TopPostsRepositoryImpl();
-//    }
 
-//    @Provides
-//    public CacheRepository provideCacheRepository() {
-//        return new CacheRepositoryImpl(mApplication);
-//    }
+    @Provides
+    public DaoSession provideDaoSession(){
+        return dao;
+    }
 }
