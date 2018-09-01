@@ -8,6 +8,11 @@ import com.antipov.buildaroute.ui.dialog.AddressInteractorImpl;
 import com.antipov.buildaroute.ui.dialog.AddressPresenter;
 import com.antipov.buildaroute.ui.dialog.AddressPresenterImpl;
 import com.antipov.buildaroute.ui.dialog.AddressView;
+import com.antipov.buildaroute.ui.fragment.history.HistoryInteractor;
+import com.antipov.buildaroute.ui.fragment.history.HistoryInteractorImpl;
+import com.antipov.buildaroute.ui.fragment.history.HistoryPresenter;
+import com.antipov.buildaroute.ui.fragment.history.HistoryPresenterImpl;
+import com.antipov.buildaroute.ui.fragment.history.HistoryView;
 import com.antipov.buildaroute.ui.fragment.map.MapInteractor;
 import com.antipov.buildaroute.ui.fragment.map.MapInteractorImpl;
 import com.antipov.buildaroute.ui.fragment.map.MapPresenter;
@@ -44,12 +49,24 @@ public class ActivityModule {
     }
 
     @Provides
+    public HistoryPresenter<HistoryView, HistoryInteractor> provideHistoryPresenter(
+            HistoryPresenterImpl<HistoryView, HistoryInteractor> presenter
+    ) {
+        return presenter;
+    }
+
+    @Provides
     public MapInteractor provideMapInteractor(MapInteractorImpl interactor) {
         return interactor;
     }
 
     @Provides
     public AddressInteractor provideAddressInteractor(AddressInteractorImpl interactor) {
+        return interactor;
+    }
+
+    @Provides
+    public HistoryInteractor provideHistoryInteractor(HistoryInteractorImpl interactor) {
         return interactor;
     }
 }

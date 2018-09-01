@@ -80,13 +80,6 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     private String encodedRoute;
 
     @Override
-    public void onStart() {
-        super.onStart();
-        // according to map lifecycle
-        map.onStart();
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getAppComponent().inject(this);
@@ -106,26 +99,6 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         waypoints.setAdapter(adapter);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // according to map lifecycle
-        map.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        // according to map lifecycle
-        map.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // according to map lifecycle
-        map.onStop();
-    }
 
     @Override
     public int getLayoutId() {
@@ -133,9 +106,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     }
 
     @Override
-    public void getExtras() {
-
-    }
+    public void getExtras() {}
 
     @Override
     public void initViews() {
@@ -448,6 +419,34 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // according to map lifecycle
+        map.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // according to map lifecycle
+        map.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // according to map lifecycle
+        map.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // according to map lifecycle
+        map.onStop();
     }
 
     @Override

@@ -135,7 +135,7 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
     }
 
     /**
-     * method for simulating route вкшмштп
+     * method for simulating route driving
      */
     @Override
     public void simulateDriving() {
