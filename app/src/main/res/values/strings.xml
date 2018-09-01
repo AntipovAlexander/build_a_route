@@ -15,6 +15,7 @@
     <string name="choose_start">Please, choose start point</string>
     <string name="choose_end">Please choose finish point</string>
     <string name="build_route">Build a route</string>
+    <string name="finish_reached">Finish reached!</string>
     <string-array name="tabs_name">
         <item>Map</item>
         <item>History</item>

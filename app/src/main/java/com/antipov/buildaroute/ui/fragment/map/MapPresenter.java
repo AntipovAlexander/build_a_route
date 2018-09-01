@@ -15,5 +15,7 @@ public interface MapPresenter<V extends MapView, I extends MapInteractor> extend
 
     void buildRoute();
 
-    void simulateDriving(List<LatLng> routeCoordinates);
+    void simulateDriving();
+
+    void onFinishReached();
 }

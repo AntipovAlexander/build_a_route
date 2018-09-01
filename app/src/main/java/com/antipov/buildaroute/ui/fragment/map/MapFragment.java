@@ -152,7 +152,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         // for building route
         buildRoute.setOnClickListener(l -> presenter.buildRoute());
         // for simulating driving
-        startDriving.setOnClickListener(l -> presenter.simulateDriving(routeCoordinates));
+        startDriving.setOnClickListener(l -> presenter.simulateDriving());
     }
 
     /**
@@ -406,6 +406,24 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         } else {
             car.setPosition(routeCoordinates.get(t.intValue()));
         }
+    }
+
+    /**
+     * @return route coordinates list size
+     */
+    @Override
+    public int getRouteLength() {
+        return routeCoordinates.size();
+    }
+
+    /**
+     * when route simulating finished
+     */
+    @Override
+    public void onFinishReached() {
+        showMessage(R.string.finish_reached);
+        car.remove();
+        car = null;
     }
 
     @Override

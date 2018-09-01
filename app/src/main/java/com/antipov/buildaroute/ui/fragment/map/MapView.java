@@ -39,4 +39,8 @@ public interface MapView extends IBaseView {
     void removeOldStart();
 
     void animateDriving(Long t);
+
+    int getRouteLength();
+
+    void onFinishReached();
 }

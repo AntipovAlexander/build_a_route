@@ -1,7 +1,5 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
-import android.util.Log;
-
 import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 import com.antipov.buildaroute.ui.base.BasePresenter;
 import com.antipov.buildaroute.utils.converter.ArgsConverter;
@@ -11,7 +9,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.disposables.Disposable;
 import rx.Subscription;
 
 import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_FINISH;
@@ -22,7 +19,6 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
 
     private final int WAYPOINTS_LIMIT = 5;
     private final int ANIMATION_SPEED = 1;
-    private Disposable disposable;
     private Subscription subs;
 
     @Inject
@@ -30,12 +26,22 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
         super(interactor);
     }
 
+    /**
+     * adding start\finish point
+     *
+     * @param request request code
+     */
     @Override
     public void addStartOrFinish(int request) {
         if (isViewNotAttached()) return;
         getView().showAddressDialog(request);
     }
 
+    /**
+     * adding point to the route
+     *
+     * @param request request code
+     */
     @Override
     public void addWayPoint(int request) {
         if (getView().getWaypointsCount() < WAYPOINTS_LIMIT) {
@@ -45,6 +51,12 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
         }
     }
 
+    /**
+     * when address picked in dialog
+     *
+     * @param item - picked address
+     * @param requestCode - request code
+     */
     @Override
     public void onAddressSelected(WayPoint item, int requestCode) {
         if (isViewNotAttached()) return;
@@ -69,6 +81,9 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
         );
     }
 
+    /**
+     * build route
+     */
     @Override
     public void buildRoute() {
         if (isViewNotAttached()) return;
@@ -120,30 +135,41 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
 
     }
 
+    /**
+     * method for simulating route вкшмштп
+     */
     @Override
-    public void simulateDriving(List<LatLng> routeCoordinates) {
+    public void simulateDriving() {
         if (isViewNotAttached()) return;
 
         if (subs != null) {
+            // restart route if was called when route simulating already
             subs.unsubscribe();
-            subs = null;
-        } else {
-            subs = getInteractor()
-                    .getAnimationObservable(ANIMATION_SPEED)
-                    .subscribe(tick -> {
-                            if (isViewNotAttached()) return;
-                            getView().animateDriving(tick);
-                        },
-                            throwable -> {
-                                if (isViewNotAttached()) return;
-                                getView().onError(throwable.getMessage());
-                            });
         }
 
+        subs = getInteractor()
+                .getAnimationObservable(ANIMATION_SPEED)
+                .subscribe(tick -> {
+                        if (isViewNotAttached()) return;
+                        // check if route finished or not
+                        if (tick < getView().getRouteLength()) {
+                            getView().animateDriving(tick);
+                        } else {
+                            onFinishReached();
+                        }
+                    },
+                        throwable -> {
+                            if (isViewNotAttached()) return;
+                            getView().onError(throwable.getMessage());
+                        });
+    }
 
-//        disposable = Observable
-//                .interval(ANIMATION_SPEED, TimeUnit.SECONDS)
-//                .observeOn()
-//                .subscribe();
+    @Override
+    public void onFinishReached() {
+        if (subs != null && !subs.isUnsubscribed()) {
+            subs.unsubscribe();
+        }
+        if (isViewNotAttached()) return;
+        getView().onFinishReached();
     }
 }
