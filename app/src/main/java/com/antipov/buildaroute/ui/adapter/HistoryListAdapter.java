@@ -10,11 +10,14 @@ import android.widget.TextView;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.data.db.entities.Route;
+import com.antipov.buildaroute.interfaces.OnReplayRouteClicked;
+import com.antipov.buildaroute.ui.fragment.history.HistoryFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,6 +25,11 @@ import butterknife.ButterKnife;
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.ViewHolder> {
 
     private List<Route> data = new ArrayList<>();
+    private OnReplayRouteClicked listener;
+
+    public HistoryListAdapter(OnReplayRouteClicked listener) {
+        this.listener = listener;
+    }
 
     @NonNull
     @Override
@@ -29,19 +37,24 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.recycler_item_history, viewGroup, false);
         ViewHolder vh = new ViewHolder(view);
-        vh.playRoute.setOnClickListener(l -> {});
+        vh.playRoute.setOnClickListener(l -> {
+            int position = vh.getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onReplayRouteClicked(data.get(position).getEncodedRoute());
+            }
+        });
         return vh;
     }
 
     private String convertToHumanReadableTime(Long createdAt) {
         Date date = new Date(createdAt);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy, HH:mm", Locale.ENGLISH);
         return dateFormat.format(date);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.number.setText(String.valueOf(i+1));
+        viewHolder.number.setText(String.valueOf(i + 1));
         viewHolder.date.setText(
                 convertToHumanReadableTime(data.get(i).getCreatedAt())
         );
@@ -60,9 +73,13 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.ib_play) ImageButton playRoute;
-        @BindView(R.id.tv_number) TextView number;
-        @BindView(R.id.tv_date) TextView date;
+        @BindView(R.id.ib_play)
+        ImageButton playRoute;
+        @BindView(R.id.tv_number)
+        TextView number;
+        @BindView(R.id.tv_date)
+        TextView date;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

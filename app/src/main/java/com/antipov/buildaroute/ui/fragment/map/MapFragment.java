@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.common.Const;
 import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
+import com.antipov.buildaroute.interfaces.OnReplayRouteClicked;
 import com.antipov.buildaroute.ui.adapter.WaypointsListAdapter;
 import com.antipov.buildaroute.ui.base.BaseFragment;
 import com.antipov.buildaroute.ui.dialog.AddressDialog;
@@ -52,7 +53,7 @@ import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_FINISH;
 import static com.antipov.buildaroute.common.Const.Requests.REQUEST_GET_START;
 
 public class MapFragment extends BaseFragment implements com.antipov.buildaroute.ui.fragment.map.MapView,
-        OnMapReadyCallback, WaypointsListAdapter.OnWaypointDeleteListener {
+        OnMapReadyCallback, WaypointsListAdapter.OnWaypointDeleteListener, OnReplayRouteClicked {
 
     @Inject
     MapPresenter<com.antipov.buildaroute.ui.fragment.map.MapView, MapInteractor> presenter;
@@ -399,6 +400,16 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         car.remove();
         car = null;
         presenter.saveRoute(encodedRoute, System.currentTimeMillis());
+    }
+
+    /**
+     * called when "play" clicked in history fragment
+     *
+     * @param encodedRoute string with route coordinates
+     */
+    @Override
+    public void onReplayRouteClicked(String encodedRoute) {
+
     }
 
     @Override

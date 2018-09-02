@@ -1,5 +1,6 @@
 package com.antipov.buildaroute.ui.fragment.history;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,18 +13,18 @@ import android.widget.RelativeLayout;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.data.db.entities.Route;
+import com.antipov.buildaroute.interfaces.OnReplayRouteClicked;
 import com.antipov.buildaroute.ui.adapter.HistoryListAdapter;
 import com.antipov.buildaroute.ui.base.BaseFragment;
 
 import java.util.List;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HistoryFragment extends BaseFragment implements HistoryView {
+public class HistoryFragment extends BaseFragment implements HistoryView, OnReplayRouteClicked {
 
     @Inject
     HistoryPresenter<HistoryView, HistoryInteractor> presenter;
@@ -35,7 +36,17 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     @BindView(R.id.btn_refresh) Button refresh;
     @BindView(R.id.btn_try_again) Button tryAgain;
     private HistoryListAdapter adapter;
+    private OnReplayRouteClicked listener;
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            this.listener = (OnReplayRouteClicked) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Host activity must implement OnReplayRouteClicked");
+        }
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -47,7 +58,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
 
     private void initAdapter() {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getBaseActivity());
-        adapter = new HistoryListAdapter();
+        adapter = new HistoryListAdapter(this);
         history.setLayoutManager(layoutManager);
         history.setAdapter(adapter);
     }
@@ -74,6 +85,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
             emptyState.setVisibility(View.GONE);
             presenter.loadHistory();
         };
+        // same refresh listener for both buttons
         refresh.setOnClickListener(listener);
         tryAgain.setOnClickListener(listener);
     }
@@ -107,5 +119,10 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     public void onDestroy() {
         super.onDestroy();
         presenter.detachView();
+    }
+
+    @Override
+    public void onReplayRouteClicked(String encodedRoute) {
+        this.listener.onReplayRouteClicked(encodedRoute);
     }
 }
