@@ -5,5 +5,7 @@ import com.antipov.buildaroute.ui.base.IBasePresenter;
 import io.reactivex.Observable;
 
 public interface AddressPresenter<V extends AddressView, I extends AddressInteractor> extends IBasePresenter<V, I> {
-    void loadAutoComplete(Observable<String> string);
+    void subscribeAutoComplete(Observable<String> string);
+
+    void unSubscribeAutoComplete();
 }

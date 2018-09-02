@@ -7,9 +7,12 @@ import com.antipov.buildaroute.ui.base.BasePresenter;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 
 public class AddressPresenterImpl <V extends AddressView, I extends AddressInteractor>
         extends BasePresenter<V, I> implements AddressPresenter<V, I>{
+
+    private Disposable disposable;
 
     @Inject
     public AddressPresenterImpl(I interactor) {
@@ -18,10 +21,11 @@ public class AddressPresenterImpl <V extends AddressView, I extends AddressInter
 
     @SuppressLint("CheckResult")
     @Override
-    public void loadAutoComplete(Observable<String> observable) {
+    public void subscribeAutoComplete(Observable<String> observable) {
         if (isViewNotAttached()) return;
-        observable.subscribe(
+        disposable = observable.subscribe(
                 string -> {
+                    if (isViewNotAttached()) return;
                     getView().showLoading();
                     getInteractor()
                             .loadAutoComplete(string)
@@ -41,6 +45,11 @@ public class AddressPresenterImpl <V extends AddressView, I extends AddressInter
                 },
                 this::onError
         );
+    }
+
+    @Override
+    public void unSubscribeAutoComplete() {
+        disposable.dispose();
     }
 
     private void onError(Throwable t) {

@@ -40,7 +40,7 @@ public class AddressPresenterImplTest {
         Observable<String> observableText = Observable.just("abcdef");
         rx.Observable<AutocompleteResults> observableAutocomplete = rx.Observable.just(AutocompleteResults.getForTests(false));
         Mockito.doReturn(observableAutocomplete).when(mockedInteractor).loadAutoComplete(ArgumentMatchers.anyString());
-        presenter.loadAutoComplete(observableText);
+        presenter.subscribeAutoComplete(observableText);
         Mockito.verify(mockedView).showLoading();
         Mockito.verify(mockedInteractor).loadAutoComplete(ArgumentMatchers.anyString());
         Mockito.verify(mockedView).hideLoading();
@@ -54,7 +54,7 @@ public class AddressPresenterImplTest {
         Observable<String> observableText = Observable.just("abcdef");
         rx.Observable<AutocompleteResults> observableAutocomplete = rx.Observable.just(AutocompleteResults.getForTests(true));
         Mockito.doReturn(observableAutocomplete).when(mockedInteractor).loadAutoComplete(ArgumentMatchers.anyString());
-        presenter.loadAutoComplete(observableText);
+        presenter.subscribeAutoComplete(observableText);
         Mockito.verify(mockedView).showLoading();
         Mockito.verify(mockedInteractor).loadAutoComplete(ArgumentMatchers.anyString());
         Mockito.verify(mockedView).hideLoading();
@@ -68,7 +68,7 @@ public class AddressPresenterImplTest {
         Observable<String> observableText = Observable.just("abcdef");
         rx.Observable<Throwable> observableAutocomplete = rx.Observable.just(new Throwable());
         Mockito.doReturn(observableAutocomplete).when(mockedInteractor).loadAutoComplete(ArgumentMatchers.anyString());
-        presenter.loadAutoComplete(observableText);
+        presenter.subscribeAutoComplete(observableText);
         Mockito.verify(mockedView).showLoading();
         Mockito.verify(mockedInteractor).loadAutoComplete(ArgumentMatchers.anyString());
         Mockito.verify(mockedView).hideLoading();

@@ -66,4 +66,9 @@ public class WayPoint implements Parcelable {
         wayPoint.setGeometry(geometry);
         return wayPoint;
     }
+
+    @Override
+    public String toString() {
+        return getFormattedAddress();
+    }
 }

@@ -17,6 +17,7 @@ import com.antipov.buildaroute.common.Const;
 import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
 import com.antipov.buildaroute.ui.adapter.AutocompleteAdapter;
 import com.antipov.buildaroute.ui.base.BaseDialogFragment;
+import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.util.List;
@@ -92,25 +93,25 @@ public class AddressDialog extends BaseDialogFragment implements AddressView, Au
 
     @Override
     public void initListeners() {
-        autoComplete.setOnItemClickListener(null);
-        autoComplete.setOnItemSelectedListener(null);
-        autoComplete.setOnClickListener(null);
         observable = RxTextView
-                .textChanges(autoComplete)                                // observing autocomplete field
-                .filter(constraint -> constraint.length() > 3)            // at least 4 chars
-                .debounce(300, TimeUnit.MILLISECONDS)             // with 0.3 sec interval
-                .map(CharSequence::toString)                              // mapping to string
+                .textChanges(autoComplete)                     // observing autocomplete field
+                .skipInitialValue()                            // skip value when subscribed
+                .filter(constraint -> constraint.length() > 3) // at least 4 chars
+                .debounce(300, TimeUnit.MILLISECONDS)  // with 0.3 sec interval
+                .map(CharSequence::toString)                    // mapping to string
                 .subscribeOn(newThread())
                 .observeOn(AndroidSchedulers.mainThread());
 
-        presenter.loadAutoComplete(observable);
+        presenter.subscribeAutoComplete(observable);
     }
 
     @SuppressLint("CheckResult")
     @Override
     public void OnAutocompleteSelected(WayPoint item) {
         this.selectedItem = item;
+        presenter.unSubscribeAutoComplete();
         autoComplete.setText(item.getFormattedAddress());
+        presenter.subscribeAutoComplete(observable);
     }
 
     @Override
