@@ -5,4 +5,5 @@ import com.antipov.buildaroute.ui.base.IBasePresenter;
 public interface HistoryPresenter <V extends HistoryView, I extends HistoryInteractor>
         extends IBasePresenter<V, I> {
 
+    void loadHistory();
 }

@@ -11,4 +11,26 @@ public class HistoryPresenterImpl <V extends HistoryView, I extends HistoryInter
     public HistoryPresenterImpl(I interactor) {
         super(interactor);
     }
+
+    @Override
+    public void loadHistory() {
+        if (isViewNotAttached()) return;
+        getView().showLoadingFullscreen();
+        getInteractor()
+                .loadHistory()
+                .subscribe(history -> {
+                            if (isViewNotAttached()) return;
+                            getView().hideLoadingFullscreen();
+                            if (history.size() == 0) {
+                                getView().onNoHistoryFound();
+                            } else {
+                                getView().renderList(history);
+                            }
+                        },
+                        throwable -> {
+                            if (isViewNotAttached()) return;
+                            getView().hideLoadingFullscreen();
+                            getView().onError(throwable.getMessage());
+                        });
+    }
 }

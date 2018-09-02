@@ -173,7 +173,9 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
     }
 
     @Override
-    public void saveRoute(String encodedRoute) {
-        getInteractor().saveRoute(encodedRoute).subscribe();
+    public void saveRoute(String encodedRoute, long time) {
+        getInteractor()
+                .saveRoute(encodedRoute, time)
+                .subscribe();
     }
 }

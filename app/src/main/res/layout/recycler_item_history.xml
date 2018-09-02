@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="16dp">
+
+    <TextView
+        android:id="@+id/tv_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@id/tv_date"
+        android:layout_alignBottom="@id/tv_date"
+        android:gravity="center"
+        android:text="#1"/>
+
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/tv_number"
+        android:layout_alignTop="@id/ib_play"
+        android:layout_alignBottom="@id/ib_play"
+        android:gravity="center"
+        android:text="29.11.2018"/>
+
+    <ImageButton
+        android:id="@+id/ib_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_play_circle"
+        android:layout_alignParentEnd="true"
+        style="@style/Widget.AppCompat.Button.Borderless" />
+
+</RelativeLayout>

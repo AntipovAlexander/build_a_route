@@ -10,5 +10,5 @@ public interface MapInteractor extends IBaseInteractor {
 
     Observable<Long> getAnimationObservable(int animationSpeed);
 
-    Observable<Long> saveRoute(String encodedRoute);
+    Observable<Long> saveRoute(String encodedRoute, long time);
 }

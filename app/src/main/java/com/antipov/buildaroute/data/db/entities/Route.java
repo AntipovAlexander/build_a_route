@@ -14,18 +14,23 @@ public class Route {
     @Property(nameInDb = "route")
     private String encodedRoute;
 
-    @Generated(hash = 1547692140)
-    public Route(Long id, String encodedRoute) {
+    @Property(nameInDb = "created_at")
+    private Long createdAt;
+
+    @Generated(hash = 1912364383)
+    public Route(Long id, String encodedRoute, Long createdAt) {
         this.id = id;
         this.encodedRoute = encodedRoute;
+        this.createdAt = createdAt;
     }
 
     @Generated(hash = 467763370)
     public Route() {
     }
 
-    public Route(String encodedRoute) {
+    public Route(String encodedRoute, long time) {
         this.encodedRoute = encodedRoute;
+        this.createdAt = time;
     }
 
     public Long getId() {
@@ -42,6 +47,14 @@ public class Route {
 
     public void setEncodedRoute(String encodedRoute) {
         this.encodedRoute = encodedRoute;
+    }
+
+    public Long getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
     }
 
     

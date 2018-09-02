@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_history"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="HISTORY"/>
+        android:layout_height="match_parent" />
 
-</LinearLayout>
+    <include
+        layout="@layout/include_progress"/>
+
+    <include
+        android:id="@+id/error_layout"
+        android:visibility="gone"
+        layout="@layout/include_error_layout"/>
+
+    <include
+        android:id="@+id/empty_layout"
+        android:visibility="gone"
+        layout="@layout/include_empty_layout"/>
+
+</FrameLayout>

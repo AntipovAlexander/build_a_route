@@ -16,6 +16,10 @@
     <string name="choose_end">Please choose finish point</string>
     <string name="build_route">Build a route</string>
     <string name="finish_reached">Finish reached!</string>
+    <string name="try_again">Try again</string>
+    <string name="empty_state">No elements was found.\nGet back, drive the route and then</string>
+    <string name="refresh">refresh</string>
+    <string name="this_list">this list.</string>
     <string-array name="tabs_name">
         <item>Map</item>
         <item>History</item>

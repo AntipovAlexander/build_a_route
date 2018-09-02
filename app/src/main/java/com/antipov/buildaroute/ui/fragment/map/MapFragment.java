@@ -398,7 +398,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         showMessage(R.string.finish_reached);
         car.remove();
         car = null;
-        presenter.saveRoute(encodedRoute);
+        presenter.saveRoute(encodedRoute, System.currentTimeMillis());
     }
 
     @Override

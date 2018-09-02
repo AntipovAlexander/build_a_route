@@ -45,10 +45,10 @@ public class MapInteractorImpl extends BaseInteractor implements MapInteractor {
     }
 
     @Override
-    public Observable<Long> saveRoute(String encodedRoute) {
+    public Observable<Long> saveRoute(String encodedRoute, long time) {
         return Observable
                 .fromCallable(() -> dao.getRouteDao()
-                .insert(new Route(encodedRoute)))
+                .insert(new Route(encodedRoute, time)))
                 .subscribeOn(newThread())
                 .observeOn(ui())
                 .retry(Const.RETRY_COUNT);
