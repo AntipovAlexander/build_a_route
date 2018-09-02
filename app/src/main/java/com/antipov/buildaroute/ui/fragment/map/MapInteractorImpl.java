@@ -39,7 +39,7 @@ public class MapInteractorImpl extends BaseInteractor implements MapInteractor {
     @Override
     public Observable<Long> getAnimationObservable(int animationSpeed) {
         return Observable
-                .interval(animationSpeed, TimeUnit.SECONDS)
+                .interval(animationSpeed, TimeUnit.MILLISECONDS)
                 .subscribeOn(newThread())
                 .observeOn(ui());
     }

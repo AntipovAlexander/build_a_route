@@ -1,6 +1,8 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,7 +64,6 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     @BindView(R.id.tv_start_point) TextView startPoint;
     @BindView(R.id.tv_end_point) TextView endPoint;
     @BindView(R.id.btn_add_between) Button addInBetween;
-    @BindView(R.id.btn_build_route) Button buildRoute;
     @BindView(R.id.btn_start_driving) Button startDriving;
     @BindView(R.id.points_recycler) RecyclerView waypoints;
 
@@ -122,10 +123,8 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         endPoint.setOnClickListener(l -> presenter.addStartOrFinish(REQUEST_GET_FINISH));
         // for picking in-between point
         addInBetween.setOnClickListener(l -> presenter.addWayPoint(REQUEST_GET_ADDRESS));
-        // for building route
-        buildRoute.setOnClickListener(l -> presenter.buildRoute());
         // for simulating driving
-        startDriving.setOnClickListener(l -> presenter.simulateDriving());
+        startDriving.setOnClickListener(l -> presenter.buildRoute());
     }
 
     /**
@@ -381,6 +380,44 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         } else {
             car.setPosition(routeCoordinates.get(t.intValue()));
         }
+    }
+
+    /**
+     * locking controls.
+     * Called when simulation driving started
+     */
+    @Override
+    public void lockControls() {
+        adapter.setClickable(false);
+        startDriving.setEnabled(false);
+        startPoint.setEnabled(false);
+        endPoint.setEnabled(false);
+        waypoints.setEnabled(false);
+        addInBetween.setEnabled(false);
+        startDriving.setAlpha(0.5f);
+        startPoint.setAlpha(0.5f);
+        endPoint.setAlpha(0.5f);
+        waypoints.setAlpha(0.5f);
+        addInBetween.setAlpha(0.5f);
+    }
+
+    /**
+     * UNlocking controls.
+     * Called when simulation driving finished
+     */
+    @Override
+    public void unLockControls() {
+        adapter.setClickable(true);
+        startDriving.setEnabled(true);
+        startPoint.setEnabled(true);
+        endPoint.setEnabled(true);
+        waypoints.setEnabled(true);
+        addInBetween.setEnabled(true);
+        startDriving.setAlpha(1f);
+        startPoint.setAlpha(1f);
+        endPoint.setAlpha(1f);
+        waypoints.setAlpha(1f);
+        addInBetween.setAlpha(1f);
     }
 
     /**

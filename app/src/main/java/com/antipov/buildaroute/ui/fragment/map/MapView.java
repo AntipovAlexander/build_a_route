@@ -43,4 +43,8 @@ public interface MapView extends IBaseView {
     int getRouteLength();
 
     void onFinishReached();
+
+    void lockControls();
+
+    void unLockControls();
 }

@@ -21,6 +21,7 @@ public class WaypointsListAdapter extends RecyclerView.Adapter<WaypointsListAdap
 
     private final OnWaypointDeleteListener listener;
     private List<WayPoint> data = new ArrayList<>();
+    private boolean isClickable = true;
 
     public WaypointsListAdapter(OnWaypointDeleteListener listener) {
         this.listener = listener;
@@ -34,7 +35,7 @@ public class WaypointsListAdapter extends RecyclerView.Adapter<WaypointsListAdap
         ViewHolder vh = new ViewHolder(view);
         vh.delete.setOnClickListener(l -> {
             int position = vh.getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
+            if (position != RecyclerView.NO_POSITION && isClickable) {
                 // remove marker
                 data.remove(position);
                 listener.onWaypointDeleteListener(position);
@@ -61,6 +62,10 @@ public class WaypointsListAdapter extends RecyclerView.Adapter<WaypointsListAdap
 
     public List<WayPoint> getData() {
         return data;
+    }
+
+    public void setClickable(boolean isClickable) {
+        this.isClickable = isClickable;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

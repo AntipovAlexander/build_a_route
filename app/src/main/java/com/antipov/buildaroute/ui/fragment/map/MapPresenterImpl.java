@@ -17,7 +17,7 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
         implements MapPresenter<V, I> {
 
     private final int WAYPOINTS_LIMIT = 5;
-    private final int ANIMATION_SPEED = 1;
+    private final int ANIMATION_SPEED = 500;
     private Subscription subs;
 
     @Inject
@@ -123,6 +123,7 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
                         // in case of success
                         getView().removeOldPolyline();
                         getView().createNewPolyline(directionsResults.toString());
+                        simulateDriving();
                     }
                 },
                 throwable -> {
@@ -145,6 +146,8 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
             // restart route if was called when route simulating already
             subs.unsubscribe();
         }
+
+        getView().lockControls();
 
         subs = getInteractor()
                 .getAnimationObservable(ANIMATION_SPEED)
@@ -170,6 +173,8 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
         }
         if (isViewNotAttached()) return;
         getView().onFinishReached();
+        getView().unLockControls();
+        getView().removeOldPolyline();
     }
 
     @Override
