@@ -65,6 +65,7 @@ public class MainActivity extends BaseActivity implements OnReplayRouteClicked {
         // finding attached fragment and converting into interface
         OnReplayRouteClicked listener = (OnReplayRouteClicked) getSupportFragmentManager()
                 .findFragmentByTag(makeFragmentName(R.id.vp_viewpager, 0));
+        viewPager.setCurrentItem(0);
         // calling method
         if (listener != null) listener.onReplayRouteClicked(encodedRoute);
     }
