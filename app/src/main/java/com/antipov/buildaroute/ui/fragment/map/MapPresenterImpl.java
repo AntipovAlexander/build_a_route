@@ -181,6 +181,15 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
     public void saveRoute(String encodedRoute, long time) {
         getInteractor()
                 .saveRoute(encodedRoute, time)
-                .subscribe();
+                .subscribe(
+                        result -> {
+                            if (isViewNotAttached()) return;
+                            getView().updateHistory();
+                        },
+                        throwable -> {
+                            if (isViewNotAttached()) return;
+                            getView().onError(throwable.getMessage());
+                        }
+                );
     }
 }

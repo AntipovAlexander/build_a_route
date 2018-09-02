@@ -1,8 +1,7 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.common.Const;
 import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
+import com.antipov.buildaroute.interfaces.OnRouteSavedToDb;
 import com.antipov.buildaroute.interfaces.OnReplayRouteClicked;
 import com.antipov.buildaroute.ui.adapter.WaypointsListAdapter;
 import com.antipov.buildaroute.ui.base.BaseFragment;
@@ -30,7 +30,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -80,6 +79,17 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     private List<Marker> markers = new ArrayList<>();
     private List<LatLng> routeCoordinates;
     private String encodedRoute;
+    private OnRouteSavedToDb listener;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            this.listener = (OnRouteSavedToDb) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Host activity must implement " + OnRouteSavedToDb.class.getName());
+        }
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -437,6 +447,14 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
         car.remove();
         car = null;
         presenter.saveRoute(encodedRoute, System.currentTimeMillis());
+    }
+
+    /**
+     * update list in history fragment
+     */
+    @Override
+    public void updateHistory() {
+        listener.updateHistory();
     }
 
     /**

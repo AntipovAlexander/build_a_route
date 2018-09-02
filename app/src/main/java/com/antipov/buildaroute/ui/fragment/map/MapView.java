@@ -47,4 +47,6 @@ public interface MapView extends IBaseView {
     void lockControls();
 
     void unLockControls();
+
+    void updateHistory();
 }

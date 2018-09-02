@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.interfaces.OnReplayRouteClicked;
+import com.antipov.buildaroute.interfaces.OnRouteSavedToDb;
 import com.antipov.buildaroute.ui.adapter.MainPagerAdapter;
 import com.antipov.buildaroute.ui.base.BaseActivity;
 import com.antipov.buildaroute.ui.fragment.history.HistoryFragment;
@@ -14,7 +15,7 @@ import com.antipov.buildaroute.ui.fragment.history.HistoryFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity implements OnReplayRouteClicked {
+public class MainActivity extends BaseActivity implements OnReplayRouteClicked, OnRouteSavedToDb {
 
     @BindView(R.id.tl_tab_layout) TabLayout tabLayout;
     @BindView(R.id.vp_viewpager) ViewPager viewPager;
@@ -68,6 +69,15 @@ public class MainActivity extends BaseActivity implements OnReplayRouteClicked {
         viewPager.setCurrentItem(0);
         // calling method
         if (listener != null) listener.onReplayRouteClicked(encodedRoute);
+    }
+
+    @Override
+    public void updateHistory() {
+        // finding attached fragment and converting into interface
+        OnRouteSavedToDb listener = (OnRouteSavedToDb) getSupportFragmentManager()
+                .findFragmentByTag(makeFragmentName(R.id.vp_viewpager, 1));
+        // calling method
+        if (listener != null) listener.updateHistory();
     }
 
     private String makeFragmentName(int viewId, long id) {

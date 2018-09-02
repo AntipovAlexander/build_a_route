@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 
 import com.antipov.buildaroute.R;
 import com.antipov.buildaroute.data.db.entities.Route;
+import com.antipov.buildaroute.interfaces.OnRouteSavedToDb;
 import com.antipov.buildaroute.interfaces.OnReplayRouteClicked;
 import com.antipov.buildaroute.ui.adapter.HistoryListAdapter;
 import com.antipov.buildaroute.ui.base.BaseFragment;
@@ -24,7 +25,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HistoryFragment extends BaseFragment implements HistoryView, OnReplayRouteClicked {
+public class HistoryFragment extends BaseFragment implements HistoryView, OnReplayRouteClicked, OnRouteSavedToDb {
 
     @Inject
     HistoryPresenter<HistoryView, HistoryInteractor> presenter;
@@ -44,7 +45,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView, OnRepl
         try {
             this.listener = (OnReplayRouteClicked) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException("Host activity must implement OnReplayRouteClicked");
+            throw new ClassCastException("Host activity must implement " + OnReplayRouteClicked.class.getName());
         }
     }
     @Override
@@ -116,13 +117,18 @@ public class HistoryFragment extends BaseFragment implements HistoryView, OnRepl
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        presenter.detachView();
+    public void onReplayRouteClicked(String encodedRoute) {
+        this.listener.onReplayRouteClicked(encodedRoute);
     }
 
     @Override
-    public void onReplayRouteClicked(String encodedRoute) {
-        this.listener.onReplayRouteClicked(encodedRoute);
+    public void updateHistory() {
+        presenter.loadHistory();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.detachView();
     }
 }
