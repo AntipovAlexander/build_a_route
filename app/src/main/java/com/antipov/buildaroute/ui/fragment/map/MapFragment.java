@@ -378,6 +378,14 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
     }
 
     /**
+     * called when route was create from given waypoints
+     */
+    @Override
+    public void onRouteBuilt() {
+        presenter.simulateDriving();
+    }
+
+    /**
      * method for animating marker
      * @param t index for coordinate
      */

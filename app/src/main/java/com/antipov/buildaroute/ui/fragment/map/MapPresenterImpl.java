@@ -123,7 +123,7 @@ public class MapPresenterImpl <V extends MapView, I extends MapInteractor> exten
                         // in case of success
                         getView().removeOldPolyline();
                         getView().createNewPolyline(directionsResults.toString());
-                        simulateDriving();
+                        getView().onRouteBuilt();
                     }
                 },
                 throwable -> {

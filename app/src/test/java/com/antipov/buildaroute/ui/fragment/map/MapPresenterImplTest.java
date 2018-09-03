@@ -1,6 +1,8 @@
 package com.antipov.buildaroute.ui.fragment.map;
 
+import com.antipov.buildaroute.common.Const;
 import com.antipov.buildaroute.data.pojo.autocomplete.WayPoint;
+import com.antipov.buildaroute.data.pojo.directions.DirectionsResults;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +12,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collections;
+
+import rx.Observable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MapPresenterImplTest {
@@ -65,8 +71,160 @@ public class MapPresenterImplTest {
 
     @Test
     public void onAddressSelected() {
-        presenter.onAddressSelected(WayPoint.getForTests(), requestCode);
-        Mockito.verify(mockedMapView).addMarker(ArgumentMatchers.anyFloat(), ArgumentMatchers.anyFloat(), requestCode);
+        int start = Const.Requests.REQUEST_GET_START;
+        int finish = Const.Requests.REQUEST_GET_FINISH;
+        int address = Const.Requests.REQUEST_GET_ADDRESS;
+        WayPoint wp = WayPoint.getForTests();
+
+        // calling method 3 times
+        presenter.onAddressSelected(wp, start);
+        presenter.onAddressSelected(wp, finish);
+        presenter.onAddressSelected(wp, address);
+
+        // check that updates for start/finish was called only once
+        Mockito.verify(mockedMapView, Mockito.times(1)).updateStartText(ArgumentMatchers.anyString());
+        Mockito.verify(mockedMapView, Mockito.times(1)).removeOldStart();
+
+        Mockito.verify(mockedMapView, Mockito.times(1)).updateFinishText(ArgumentMatchers.anyString());
+        Mockito.verify(mockedMapView, Mockito.times(1)).removeOldFinish();
+
+        // check adding points for three different point types
+        Mockito.verify(mockedMapView).addMarker(
+                wp.getGeometry().getLocation().getLat(),
+                wp.getGeometry().getLocation().getLng(),
+                start
+        );
+
+        Mockito.verify(mockedMapView).addMarker(
+                wp.getGeometry().getLocation().getLat(),
+                wp.getGeometry().getLocation().getLng(),
+                finish
+        );
+
+        Mockito.verify(mockedMapView).addMarker(
+                wp.getGeometry().getLocation().getLat(),
+                wp.getGeometry().getLocation().getLng(),
+                address
+        );
         Mockito.verifyNoMoreInteractions(mockedMapView);
+    }
+
+    @Test
+    public void buildRouteNullStart() {
+        Mockito.doReturn(null).when(mockedMapView).getStartPoint();
+        Mockito.doReturn(WayPoint.getForTests()).when(mockedMapView).getFinishPoint();
+
+        presenter.buildRoute();
+        Mockito.verify(mockedMapView).showLoadingFullscreen();
+        Mockito.verify(mockedMapView).getStartPoint();
+        Mockito.verify(mockedMapView).getFinishPoint();
+        Mockito.verify(mockedMapView).getWaypoints();
+        Mockito.verify(mockedMapView).hideLoadingFullscreen();
+        Mockito.verify(mockedMapView).notifyNullStart();
+        Mockito.verifyNoMoreInteractions(mockedMapView);
+    }
+
+    @Test
+    public void buildRouteNullFinish() {
+        Mockito.doReturn(null).when(mockedMapView).getFinishPoint();
+        Mockito.doReturn(WayPoint.getForTests()).when(mockedMapView).getStartPoint();
+
+        presenter.buildRoute();
+        Mockito.verify(mockedMapView).showLoadingFullscreen();
+        Mockito.verify(mockedMapView).getStartPoint();
+        Mockito.verify(mockedMapView).getFinishPoint();
+        Mockito.verify(mockedMapView).getWaypoints();
+        Mockito.verify(mockedMapView).hideLoadingFullscreen();
+        Mockito.verify(mockedMapView).notifyNullFinish();
+        Mockito.verifyNoMoreInteractions(mockedMapView);
+    }
+
+    @Test
+    public void buildRoutePositive() {
+        Mockito.doReturn(WayPoint.getForTests()).when(mockedMapView).getFinishPoint();
+        Mockito.doReturn(WayPoint.getForTests()).when(mockedMapView).getStartPoint();
+        Mockito.doReturn(Collections.singletonList(WayPoint.getForTests())).when(mockedMapView).getWaypoints();
+        Mockito.doReturn(Observable.just(DirectionsResults.getForTests("ok"))).when(mockedMapInteractor).calculateRoute(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()
+        );
+        presenter.buildRoute();
+
+        Mockito.verify(mockedMapView).showLoadingFullscreen();
+        Mockito.verify(mockedMapView).getStartPoint();
+        Mockito.verify(mockedMapView).getFinishPoint();
+        Mockito.verify(mockedMapView).getWaypoints();
+        // never called validation methods, because input is valid
+        Mockito.verify(mockedMapView, Mockito.never()).notifyNullFinish();
+        Mockito.verify(mockedMapView, Mockito.never()).notifyNullStart();
+
+        Mockito.verify(mockedMapView).hideLoadingFullscreen();
+        Mockito.verify(mockedMapView).removeOldPolyline();
+        Mockito.verify(mockedMapView).createNewPolyline(ArgumentMatchers.anyString());
+        Mockito.verify(mockedMapView).onRouteBuilt();
+        Mockito.verifyNoMoreInteractions(mockedMapView);
+    }
+
+    @Test
+    public void buildRouteBadStatus() {
+        Mockito.doReturn(WayPoint.getForTests()).when(mockedMapView).getFinishPoint();
+        Mockito.doReturn(WayPoint.getForTests()).when(mockedMapView).getStartPoint();
+        Mockito.doReturn(Collections.singletonList(WayPoint.getForTests())).when(mockedMapView).getWaypoints();
+        Mockito.doReturn(Observable.just(DirectionsResults.getForTests("FALSE"))).when(mockedMapInteractor).calculateRoute(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()
+        );
+        presenter.buildRoute();
+
+        Mockito.verify(mockedMapView).showLoadingFullscreen();
+        Mockito.verify(mockedMapView).getStartPoint();
+        Mockito.verify(mockedMapView).getFinishPoint();
+        Mockito.verify(mockedMapView).getWaypoints();
+        // never called validation methods, because input is valid
+        Mockito.verify(mockedMapView, Mockito.never()).notifyNullFinish();
+        Mockito.verify(mockedMapView, Mockito.never()).notifyNullStart();
+
+        Mockito.verify(mockedMapView).hideLoadingFullscreen();
+        Mockito.verify(mockedMapView).onError(ArgumentMatchers.anyString());
+        Mockito.verifyNoMoreInteractions(mockedMapView);
+    }
+
+    @Test
+    public void buildRouteNegative() {
+        Mockito.doReturn(WayPoint.getForTests()).when(mockedMapView).getFinishPoint();
+        Mockito.doReturn(WayPoint.getForTests()).when(mockedMapView).getStartPoint();
+        Mockito.doReturn(Collections.singletonList(WayPoint.getForTests())).when(mockedMapView).getWaypoints();
+        Mockito.doReturn(Observable.just(new Throwable())).when(mockedMapInteractor).calculateRoute(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()
+        );
+        presenter.buildRoute();
+
+        Mockito.verify(mockedMapView).showLoadingFullscreen();
+        Mockito.verify(mockedMapView).getStartPoint();
+        Mockito.verify(mockedMapView).getFinishPoint();
+        Mockito.verify(mockedMapView).getWaypoints();
+        // never called validation methods, because input is valid
+        Mockito.verify(mockedMapView, Mockito.never()).notifyNullFinish();
+        Mockito.verify(mockedMapView, Mockito.never()).notifyNullStart();
+
+        Mockito.verify(mockedMapView).hideLoadingFullscreen();
+        Mockito.verify(mockedMapView).onError(ArgumentMatchers.anyString());
+        Mockito.verifyNoMoreInteractions(mockedMapView);
+    }
+
+    @Test
+    public void simulateDriving() {
+    }
+
+    @Test
+    public void onFinishReached() {
+    }
+
+    @Test
+    public void saveRoute() {
     }
 }

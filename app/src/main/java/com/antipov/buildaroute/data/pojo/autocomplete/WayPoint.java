@@ -61,6 +61,7 @@ public class WayPoint implements Parcelable {
 
     static public WayPoint getForTests() {
         WayPoint wayPoint = new WayPoint();
+        wayPoint.setFormattedAddress("address");
         Geometry geometry = new Geometry();
         geometry.setLocation(new Location());
         wayPoint.setGeometry(geometry);
