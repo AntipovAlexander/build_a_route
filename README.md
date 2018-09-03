@@ -1,8 +1,8 @@
 # Build A Route
-#### Build A Route is test assignment for Woxapp.
+#### Build A Route is a test assignment for Woxapp.
 
 Showing two fragments with map on the first, and routes history on the second. 
-#####First fragment has such features:
+##### First fragment has such features:
 * Google Map
 * adding start point
 * adding finish point
@@ -13,11 +13,11 @@ Showing two fragments with map on the first, and routes history on the second.
 * displaying built route on map
 * animated driving simulation through route 
 
-#####Second fragment has such features:
+##### Second fragment has such features:
 * displaying routes history
 * replaying passed route
 
-#####Used such technologies and libs:
+##### Used such technologies and libs:
 * Java
 * MVP architecture 
 * Unit tests
