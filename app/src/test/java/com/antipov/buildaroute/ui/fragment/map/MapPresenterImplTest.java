@@ -217,14 +217,73 @@ public class MapPresenterImplTest {
     }
 
     @Test
-    public void simulateDriving() {
+    public void simulateDrivingPositive() {
+        Long[] ticks = new Long[10];
+        for (int i = 0; i < ticks.length; i++) ticks[i] = (long) i;
+
+        Mockito
+                .doReturn(Observable.from(ticks))
+                .when(mockedMapInteractor)
+                .getAnimationObservable(ArgumentMatchers.anyInt());
+        Mockito
+                .doReturn(ticks.length - 1)
+                .when(mockedMapView)
+                .getRouteLength();
+
+        presenter.simulateDriving();
+        Mockito.verify(mockedMapView).lockControls();
+        Mockito.verify(mockedMapView, Mockito.times(ticks.length - 1)).animateDriving(ArgumentMatchers.anyLong());
+        Mockito.verify(mockedMapView, Mockito.times(ticks.length -1)).animateDriving(ArgumentMatchers.anyLong());
+        Mockito.verify(mockedMapView).onFinishReached();
+    }
+
+    @Test
+    public void simulateDrivingNegative() {
+        Mockito
+                .doReturn(Observable.just(new Throwable()))
+                .when(mockedMapInteractor)
+                .getAnimationObservable(ArgumentMatchers.anyInt());
+
+        presenter.simulateDriving();
+        Mockito.verify(mockedMapView).lockControls();
+        Mockito.verify(mockedMapView).onError(ArgumentMatchers.anyString());
+        Mockito.verifyNoMoreInteractions(mockedMapView);
     }
 
     @Test
     public void onFinishReached() {
+        presenter.onFinishReached();
+        Mockito.verify(mockedMapView).onFinishReached();
+        Mockito.verify(mockedMapView).unLockControls();
+        Mockito.verify(mockedMapView).removeOldPolyline();
+        Mockito.verifyNoMoreInteractions(mockedMapView);
     }
 
     @Test
-    public void saveRoute() {
+    public void saveRoutePositive() {
+        String encodedRoute = "route";
+        long time = 0L;
+        Mockito
+                .doReturn(Observable.just(100L))
+                .when(mockedMapInteractor)
+                .saveRoute(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong());
+
+        presenter.saveRoute(encodedRoute, time);
+        Mockito.verify(mockedMapView).updateHistory();
+        Mockito.verifyNoMoreInteractions(mockedMapView);
+    }
+
+    @Test
+    public void saveRouteNegative() {
+        String encodedRoute = "route";
+        long time = 0L;
+        Mockito
+                .doReturn(Observable.just(new Throwable()))
+                .when(mockedMapInteractor)
+                .saveRoute(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong());
+
+        presenter.saveRoute(encodedRoute, time);
+        Mockito.verify(mockedMapView).onError(ArgumentMatchers.anyString());
+        Mockito.verifyNoMoreInteractions(mockedMapView);
     }
 }
