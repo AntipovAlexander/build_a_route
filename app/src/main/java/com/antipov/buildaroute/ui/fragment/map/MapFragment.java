@@ -464,6 +464,7 @@ public class MapFragment extends BaseFragment implements com.antipov.buildaroute
      */
     @Override
     public void onReplayRouteClicked(String encodedRoute) {
+        removeOldPolyline();
         createNewPolyline(encodedRoute);
         presenter.simulateDriving();
     }
